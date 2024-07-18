@@ -3,12 +3,9 @@ package org.firstinspires.ftc.teamcode.teamCode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.sfdev.assembly.state.StateMachineBuilder;
 
-<<<<<<< Updated upstream
-import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utils.StickyGamepad;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.ClawController;
-=======
->>>>>>> Stashed changes
 import org.firstinspires.ftc.teamcode.teamCode.Classes.IntakeController;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.LiftController;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.Outtake4Bar;
@@ -29,7 +26,7 @@ public class TeleOp extends LinearOpMode {
     Storage storage;
     ExtendoControllerPID slides;
     ClawController claw;
-    SampleMecanumDrive drive;
+    MecanumDrive drive;
     StickyGamepad sticky1, sticky2;
 
 
@@ -112,10 +109,9 @@ public class TeleOp extends LinearOpMode {
 
 
 
-
             sticky1.update();
             sticky2.update();
-            drive.RobotCentric(gamepad1);
+            drive.robotCentric(gamepad1);
             machine.update();
         }
     }
