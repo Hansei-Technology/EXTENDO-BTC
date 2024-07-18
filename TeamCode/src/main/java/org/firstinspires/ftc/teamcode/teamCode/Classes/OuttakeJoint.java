@@ -11,6 +11,7 @@ public class OuttakeJoint {
     public static double IntakePos = 0.5;
     public static double ReadyPos = 0.5;
     public static double DropPos = 0.5;
+    public static double SpikePlace = 0.6;  //4bar pe podea pt spike mark in auto
 
     public OuttakeJoint(HardwareMap map)
     {
@@ -35,5 +36,6 @@ public class OuttakeJoint {
     {
         servo.setPosition(ReadyPos);
     }
+    public void goToPlaceAuto(){servo.setPosition(SpikePlace);}
 
 }

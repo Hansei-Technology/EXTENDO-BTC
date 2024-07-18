@@ -11,6 +11,7 @@ public class Outtake4Bar {
     public static double IntakePos = 0.5;
     public static double DropPos = 0.5;
     public static double ReadyPos = 0.5;
+    public static double SpikePlace = 0.6;  //4bar pe podea pt spike mark in auto
 
     public Outtake4Bar(HardwareMap map)
     {
@@ -20,7 +21,8 @@ public class Outtake4Bar {
 
     enum Status {
         INTAKE,
-        DROP
+        DROP,
+        AUTO_PLACE
     }
 
     public void setPosition(double pos) {
@@ -39,4 +41,6 @@ public class Outtake4Bar {
     public void goToDrop() {
         setPosition(DropPos);
     }
+
+    public void goToPlaceAuto(){setPosition(SpikePlace);}
 }
