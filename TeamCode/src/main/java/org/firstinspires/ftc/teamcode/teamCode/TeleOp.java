@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teamCode;
 
+import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.sfdev.assembly.state.StateMachineBuilder;
 
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.teamcode.teamCode.Classes.Storage;
 
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
+@Photon
 public class TeleOp extends LinearOpMode {
 
     LiftController lift;
