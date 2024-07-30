@@ -30,7 +30,6 @@ import java.util.List;
 
 public class AUTONOM_SKELETON extends LinearOpMode {
 
-
     LiftController lift;
     OuttakeRotation outtakeRotation;
     Outtake4Bar outtake4Bar;
@@ -47,7 +46,6 @@ public class AUTONOM_SKELETON extends LinearOpMode {
     State CS = State.NOTHING, PS = State.NOTHING; //currentState/previousState
 
     public static double x_start = -43, y_start = -61, angle_start = 270;
-
 
     /**
      * purple
