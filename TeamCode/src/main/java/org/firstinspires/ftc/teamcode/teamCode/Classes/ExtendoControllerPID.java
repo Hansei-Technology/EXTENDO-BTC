@@ -13,7 +13,7 @@ public class ExtendoControllerPID {
     //double kp = 0.02, kd = 0.01, ki = 0.002;
     double kp = 0, kd = 0, ki = 0;
     PIDController pidController = new PIDController(kp, kd, ki);
-    double magicPOWER = 0.3;
+    public static double magicPOWER = -0.5;
     public int position;
     public static int MAX_POS = 1000;
     boolean pidON = true;
@@ -31,7 +31,7 @@ public class ExtendoControllerPID {
     int time_to_wait;
 
     public ExtendoControllerPID(HardwareMap map) {
-        extendo = map.get(DcMotorEx.class, "Extendo");
+        extendo = map.get(DcMotorEx.class, "");
 
         extendo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -48,11 +48,11 @@ public class ExtendoControllerPID {
 
     public void setPower(double power) {
         if(power != 0) pidON = false;
-        if(extendo.getCurrentPosition() < MAX_POS - 50 && power > 0) {
+        if(position < MAX_POS - 50 && power > 0) {
             extendo.setPower(power);
             currentState = States.EXTENDED;
         }
-        if(extendo.getCurrentPosition() > 10 && power < 0) extendo.setPower(power);
+        if(position > 10 && power < 0) extendo.setPower(power);
     }
 
 
@@ -63,7 +63,7 @@ public class ExtendoControllerPID {
     }
 
     public void goDownTillMotorOverCurrent() {
-        extendo.setPower(-0.5);
+        extendo.setPower(magicPOWER);
         currentState = States.RETRACT_MAGIC;
     }
 
@@ -96,7 +96,6 @@ public class ExtendoControllerPID {
             double powerExtendo = pidController.update(position);
             extendo.setPower(powerExtendo);
         }
-
     }
 
 

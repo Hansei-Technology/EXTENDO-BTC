@@ -2,45 +2,40 @@ package org.firstinspires.ftc.teamcode.teamCode.Classes;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.StateMachine;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Utils.PIDController;
 
-public class LiftController { //clasa veche lift controller
-    DcMotorEx left, right;
+public class LiftController {
+    DcMotorEx left;
+    DcMotorEx right;
     //double kp = 0.02, kd = 0.01, ki = 0.002;
-    double kp = 0.035, kd = 0.05, ki = 0.5;
+    double kp = 0, kd = 0, ki = 0;
     PIDController pidController = new PIDController(kp, kd, ki);
-    double magicPOWER = 0.3;
-    int PLACE_POS = 900;
+    public static double magicPOWER = -0.3;
     public int position;
-    int SAFE_POS = 400;
-    public static int MAX_POS = 2200;
-    public static int UP_POS = 2200;
-    public static int HANG_POS = 2200;
+    public static int MAX_POS = 1000;
+    public static int LOW_POS = 300;
+    public static int MID_POS = 700;
     boolean pidON = true;
 
     public enum States {
-        GOING_DOWN_PID,
-        GOING_DOWN_MAGIC,
-        DOWN,
-        UP
+        RETRACT_PID,
+        RETRACT_MAGIC,
+        EXTENDED,
+        RETRACTED
     }
 
-    public States currentState = States.DOWN;
+    public States currentState = States.EXTENDED;
 
     ElapsedTime timer;
     int time_to_wait;
 
-    public LiftController(HardwareMap map) {
-        left = map.get(DcMotorEx.class, "leftLift");
-        right = map.get(DcMotorEx.class, "rightLift");
-
-        right.setDirection(DcMotorSimple.Direction.REVERSE);
+    public LiftController (HardwareMap map) {
+        left = map.get(DcMotorEx.class, "");
+        right = map.get(DcMotorEx.class, "");
 
         left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -54,77 +49,69 @@ public class LiftController { //clasa veche lift controller
         left.setCurrentAlert(4, CurrentUnit.AMPS);
         right.setCurrentAlert(4, CurrentUnit.AMPS);
 
-        pidController.targetValue = -10;
+        pidController.targetValue = 0;
 
         timer = new ElapsedTime();
     }
 
-    public void goingUp()
-    {
-        if (position < MAX_POS)
-            pidController.targetValue = position + 10;
+    public void setPower(double power) {
+        if(power != 0) pidON = false;
+        if(position < MAX_POS - 50 && power > 0) {
+            left.setPower(power);
+            right.setPower(power);
+            currentState = States.EXTENDED;
+        }
+        if(position > 10 && power < 0) left.setPower(power);
     }
 
-    public void goingDown()
-    {
-        if(position > 10)
-            pidController.targetValue = position - 10;
-    }
 
-    public void goToMid()
-    {
-        pidController.targetValue = PLACE_POS;
-    }
-    public void goToMax()
-    {
-        pidController.targetValue = UP_POS;
-    }
-    public void goToHang() {
-        pidController.targetValue = HANG_POS;
-    }
-    public void goTo0() {
+    public void goDown() {
+        pidON = true;
         pidController.targetValue = 0;
-        currentState = States.GOING_DOWN_PID;
+        currentState = States.RETRACT_PID;
+    }
+
+    public void goDownTillMotorOverCurrent() {
+        left.setPower(magicPOWER);
+        right.setPower(magicPOWER);
+        currentState = States.RETRACT_MAGIC;
     }
 
     public void update() {
 
         switch (currentState)
         {
-            case GOING_DOWN_PID:
+            case RETRACT_PID:
             {
-                if(Math.abs( position - 0) < 30)
-                {
-                    pidON = false;
-                    currentState = States.GOING_DOWN_MAGIC;
-                    left.setPower(magicPOWER);
-                    right.setPower(magicPOWER);
-                }
+                pidON = true;
+                if(position <= 0) currentState = States.RETRACTED;
                 break;
             }
-            case GOING_DOWN_MAGIC:
+            case RETRACT_MAGIC:
             {
-                if(left.isOverCurrent() || right.isOverCurrent())
+                if(left.isOverCurrent())
                 {
                     ResetEncoders();
                     pidController.targetValue = 0;
                     pidON = true;
-                    currentState = States.DOWN;
+                    currentState = States.RETRACTED;
                 }
+                break;
             }
         }
-
         if(pidON)
         {
-            position = left.getCurrentPosition();
+            position = getPosition();
             //pidController.targetValue = rowPosition[targetRow];
-            double powerLift = pidController.update(position);
-            left.setPower(powerLift);
-            right.setPower(powerLift);
+            double powerExtendo = pidController.update(position);
+            left.setPower(powerExtendo);
+            right.setPower(powerExtendo);
         }
-
     }
 
+    int getPosition() {
+        return left.getCurrentPosition();
+    }
 
     public void ResetEncoders() {
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

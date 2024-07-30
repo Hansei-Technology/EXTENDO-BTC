@@ -19,7 +19,7 @@ public class IntakeSubsystem {
         timer = new ElapsedTime();
 
         intake4Bar.goTo(Intake4Bar.POSE.pixel1);
-        storage.close();
+        closeLatch();
     }
 
     public enum State {
@@ -43,6 +43,15 @@ public class IntakeSubsystem {
         intakeController.turnOff();
         currentState = State.OFF;
     }
+
+    public void openLatch() {
+        storage.open();
+    }
+
+    public void closeLatch() {
+        storage.close();
+    }
+
 
     public void update() {
         switch (currentState) {
