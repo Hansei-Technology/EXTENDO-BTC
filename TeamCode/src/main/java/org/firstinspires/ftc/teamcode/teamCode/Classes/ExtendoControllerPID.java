@@ -19,7 +19,7 @@ public class ExtendoControllerPID {
     boolean pidON = true;
 
     public enum States {
-       RETRACT_PID,
+        RETRACT_PID,
         RETRACT_MAGIC,
         EXTENDED,
         RETRACTED
@@ -46,18 +46,26 @@ public class ExtendoControllerPID {
         timer = new ElapsedTime();
     }
 
-    public void extend()
-    {
-        if (position < MAX_POS)
-            pidController.targetValue = position + 10;
+    public void setPower(double power) {
+        if(power != 0) pidON = false;
+        if(extendo.getCurrentPosition() < MAX_POS - 50 && power > 0) {
+            extendo.setPower(power);
+            currentState = States.EXTENDED;
+        }
+        if(extendo.getCurrentPosition() > 10 && power < 0) extendo.setPower(power);
     }
 
-    public void retract()
-    {
-        if(position > 10)
-            pidController.targetValue = position - 10;
+
+    public void goDown() {
+        pidON = true;
+        pidController.targetValue = 0;
+        currentState = States.RETRACT_PID;
     }
 
+    public void goDownTillMotorOverCurrent() {
+        extendo.setPower(-0.5);
+        currentState = States.RETRACT_MAGIC;
+    }
 
     public void update() {
 
@@ -65,12 +73,8 @@ public class ExtendoControllerPID {
         {
             case RETRACT_PID:
             {
-                if(Math.abs( position - 0) < 30)
-                {
-                    pidON = false;
-                    currentState = States.RETRACT_MAGIC;
-                    extendo.setPower(magicPOWER);
-                }
+                pidON = true;
+                if(position <= 0) currentState = States.RETRACTED;
                 break;
             }
             case RETRACT_MAGIC:
@@ -82,9 +86,9 @@ public class ExtendoControllerPID {
                     pidON = true;
                     currentState = States.RETRACTED;
                 }
+                break;
             }
         }
-
         if(pidON)
         {
             position = extendo.getCurrentPosition();

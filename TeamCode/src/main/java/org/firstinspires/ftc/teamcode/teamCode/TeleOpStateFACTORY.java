@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.teamCode.Classes.Storage;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 @Photon
-public class TeleOp extends LinearOpMode {
+public class TeleOpStateFACTORY extends LinearOpMode {
 
     LiftController lift;
     OuttakeRotation outtakeRotation;
