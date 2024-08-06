@@ -6,7 +6,7 @@ public class PIDController {
     private final ElapsedTime period = new ElapsedTime();
     public double targetValue = 0;
     public double lastTargetValue = 0;
-    public double maxOutput = 0.6;
+    public double maxOutput = 1;
     // Alpha is the extinction coefficient.  It must be between (0.0, 1.0]
     //   * 0 means that new values are ignored
     //   * 1 means that the previous values don't matter at all (no averaging).

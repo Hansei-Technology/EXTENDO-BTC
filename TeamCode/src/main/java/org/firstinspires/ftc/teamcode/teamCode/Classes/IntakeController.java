@@ -1,14 +1,16 @@
 package org.firstinspires.ftc.teamcode.teamCode.Classes;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+@Config
 public class IntakeController {
     DcMotorEx motor;
-    public static double speed1 = 0.8, speed2 = -0.5;
+    public static double speed1 = 1, speed2 = -0.7, speed3 = 0.3;
     public IntakeController(HardwareMap map) {
-        motor = map.get(DcMotorEx.class, "");
+        motor = map.get(DcMotorEx.class, "m3");
 
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -25,4 +27,8 @@ public class IntakeController {
     public void reverse() {
         motor.setPower(speed2);
     }
+    public void reverseAuto() {
+        motor.setPower(speed3);
+    }
+
 }

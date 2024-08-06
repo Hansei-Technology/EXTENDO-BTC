@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.sfdev.assembly.state.*;
 
 // @Autonomous or @TeleOp
-@TeleOp
+@TeleOp(group = "Teste")
 public class StateMachineTest extends LinearOpMode {
     ElapsedTime timer;
     enum States {

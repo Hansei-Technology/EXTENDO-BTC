@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Utils.PIDController;
 
 
 @Config
-@TeleOp
+@TeleOp(group = "Teste")
 public class TestConfigMotor1PIDServo extends LinearOpMode {
     DcMotorEx motor;
     Servo servo1, servo2;

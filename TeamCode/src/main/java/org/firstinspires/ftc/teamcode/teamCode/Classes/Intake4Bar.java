@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.teamCode.Classes;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+@Config
 public class Intake4Bar {
     Servo servo;
 
@@ -15,7 +17,7 @@ public class Intake4Bar {
 
 
     public Intake4Bar(HardwareMap map) {
-        servo = map.get(Servo.class, "");
+        servo = map.get(Servo.class, "s1");
     }
 
     public enum POSE {
@@ -24,8 +26,28 @@ public class Intake4Bar {
         pixel3,
         pixel4,
         pixel5,
+        pixel0,
         moving
     }
+
+    public POSE goDown1pixel(POSE pose) {
+        switch (pose) {
+            case pixel5:
+                return POSE.pixel4;
+            case pixel4:
+                return POSE.pixel3;
+            case pixel3:
+                return POSE.pixel2;
+            case pixel2:
+                return POSE.pixel1;
+            case pixel1:
+                return POSE.pixel0;
+            case pixel0:
+                return POSE.pixel5;
+        }
+        return POSE.pixel5;
+    }
+
 
     public void goTo(POSE poz) {
         switch (poz) {

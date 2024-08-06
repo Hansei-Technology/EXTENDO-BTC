@@ -1,14 +1,19 @@
 package org.firstinspires.ftc.teamcode.configs;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.teamCode.Classes.Intake4Bar;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.IntakeSubsystem;
 
+@TeleOp(group = "Teste")
 public class IntakeSubsystemTester extends LinearOpMode {
     IntakeSubsystem intake;
     @Override
     public void runOpMode() throws InterruptedException {
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         intake = new IntakeSubsystem(hardwareMap);
 
         waitForStart();
@@ -22,6 +27,12 @@ public class IntakeSubsystemTester extends LinearOpMode {
 
             if(gamepad1.y) intake.stop();
 
+            if(gamepad1.right_bumper) intake.openLatch();
+            if(gamepad1.left_bumper) intake.closeLatch();
+
+            telemetry.addData("timer", intake.timer.milliseconds());
+            telemetry.addData("state", intake.currentState);
+            telemetry.update();
             intake.update();
         }
     }

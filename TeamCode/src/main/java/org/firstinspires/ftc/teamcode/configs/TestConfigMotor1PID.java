@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Utils.PIDController;
 
 
 @Config
-@TeleOp
+@TeleOp(group = "Teste")
 public class TestConfigMotor1PID extends LinearOpMode {
     DcMotorEx motor;
     public static String name = "";

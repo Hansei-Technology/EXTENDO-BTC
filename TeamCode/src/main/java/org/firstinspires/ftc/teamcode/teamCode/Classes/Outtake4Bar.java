@@ -8,15 +8,16 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Outtake4Bar {
     Servo left, right;
 
-    public static double IntakePos = 0.5;
-    public static double DropPos = 0.5;
-    public static double ReadyPos = 0.5;
-    public static double SpikePlace = 0.6;  //4bar pe podea pt spike mark in auto
+    public static double IntakePos = 0.88;
+    public static double DropPos = 0.25;
+    public static double ReadyPos = 0.78;
+    public static double PreloadsPos = 0.3;  //4bar pe podea pt spike mark in auto
+    public static double Cristina = 0.72;
 
     public Outtake4Bar(HardwareMap map)
     {
-        left = map.get(Servo.class, "");
-        right = map.get(Servo.class, "");
+        left = map.get(Servo.class, "s5e");
+        right = map.get(Servo.class, "s4e");
     }
 
     enum Status {
@@ -42,5 +43,9 @@ public class Outtake4Bar {
         setPosition(DropPos);
     }
 
-    public void goToPlaceAuto(){setPosition(SpikePlace);}
+    public void goToPreloads(){setPosition(PreloadsPos);}
+
+    public void goingToPizdaMati() {
+        setPosition(Cristina);
+    }
 }

@@ -1,15 +1,17 @@
 package org.firstinspires.ftc.teamcode.teamCode.Classes;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+@Config
 public class IntakeSubsystem {
-    Intake4Bar intake4Bar;
-    IntakeController intakeController;
-    Storage storage;
-    ElapsedTime timer;
-    PololuSensor pololuSensor;
+    public Intake4Bar intake4Bar;
+    public IntakeController intakeController;
+    public Storage storage;
+    public ElapsedTime timer;
+    public PololuSensor pololuSensor;
 
     public IntakeSubsystem(HardwareMap map) {
         intakeController = new IntakeController(map);
@@ -27,16 +29,32 @@ public class IntakeSubsystem {
         OFF,
         GOT_PIXELS_WAITING,
         REVERSE,
-        FULL
+        FULL,
+        AUTO_ON,
+        AUTO_OFF,
+        AUTO_GOT_PIXELS_WAITING,
+        AUTO_REVERSE,
+        AUTO_FULL
+
     }
     public State currentState = State.OFF, previousState = State.OFF;
-    public static int time_to_settle = 100;
-    public static int time_to_reverse = 300;
+    public static int time_to_settle = 1000;
+    public static int time_to_reverse = 1000;
+
+    public boolean isFull() {
+        return currentState == State.FULL;
+    }
 
     public void takePixel(Intake4Bar.POSE poz) {
         intake4Bar.goTo(poz);
         intakeController.turnOn();
         currentState = State.ON;
+    }
+
+    public void takePixelAuto(Intake4Bar.POSE poz) {
+        intake4Bar.goTo(poz);
+        intakeController.turnOn();
+        currentState = State.AUTO_ON;
     }
 
     public void stop() {
@@ -56,29 +74,62 @@ public class IntakeSubsystem {
     public void update() {
         switch (currentState) {
             case ON:
+                closeLatch();
                 if(pololuSensor.detect() == 2) {
                     currentState = State.GOT_PIXELS_WAITING;
+                    timer.reset();
                 }
                 break;
             case GOT_PIXELS_WAITING:
-                if (currentState != previousState) {
-                    timer.reset();
-                }
                 if(timer.milliseconds() > time_to_settle) {
                     currentState = State.REVERSE;
                     intakeController.reverse();
+                    //openLatch();
+                    timer.reset();
                 }
                 break;
             case REVERSE:
-                if (currentState != previousState) {
-                    timer.reset();
-                }
                 if(timer.milliseconds() > time_to_reverse) {
                     currentState = State.FULL;
-                    intakeController.reverse();
+                    intakeController.turnOff();
                 }
+                break;
+
+            case FULL:
+                if (pololuSensor.detect() != 2) currentState = State.OFF;
+                break;
         }
         previousState = currentState;
     }
 
+
+    public void updateAuto() {
+        switch (currentState) {
+            case AUTO_ON:
+                closeLatch();
+                if(pololuSensor.detect() == 2) {
+                    currentState = State.GOT_PIXELS_WAITING;
+                    timer.reset();
+                }
+                break;
+            case AUTO_GOT_PIXELS_WAITING:
+                if(timer.milliseconds() > time_to_settle) {
+                    currentState = State.FULL;
+                    intakeController.reverse();
+                    //openLatch();
+                    timer.reset();
+                }
+                break;
+
+            case AUTO_FULL:
+                if (pololuSensor.detect() != 2) currentState = State.OFF;
+                break;
+        }
+        previousState = currentState;
+    }
+    public void turnOff() {
+        currentState = State.AUTO_FULL;
+        openLatch();
+        intakeController.turnOff();
+    }
 }

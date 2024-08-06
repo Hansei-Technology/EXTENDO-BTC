@@ -1,22 +1,30 @@
 package org.firstinspires.ftc.teamcode.teamCode.Classes;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Utils.PIDController;
 
+@Config
 public class ExtendoControllerPID {
-    DcMotorEx extendo;
+    DcMotorEx left;
     //double kp = 0.02, kd = 0.01, ki = 0.002;
-    double kp = 0, kd = 0, ki = 0;
+    public static double kp = 0.03, kd = 0.04, ki = 0;
     PIDController pidController = new PIDController(kp, kd, ki);
-    public static double magicPOWER = -0.5;
+    public static double magicPOWER = -0.3;
     public int position;
-    public static int MAX_POS = 1000;
-    boolean pidON = true;
+    public static int MAX_POS = 1400;
+    public static int TRANSFER_POZ = -50;
+    public static int MID_POS = 1000;
+
+    public static int DRIVE_POS = 0;
+    public boolean pidON = true;
 
     public enum States {
         RETRACT_PID,
@@ -28,18 +36,18 @@ public class ExtendoControllerPID {
     public States currentState = States.EXTENDED;
 
     ElapsedTime timer;
-    int time_to_wait;
+    public static int time_for_MAGIC = 1000;
 
-    public ExtendoControllerPID(HardwareMap map) {
-        extendo = map.get(DcMotorEx.class, "");
+    public ExtendoControllerPID (HardwareMap map) {
+        left = map.get(DcMotorEx.class, "m2e");
 
-        extendo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        extendo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        extendo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        extendo.setCurrentAlert(4, CurrentUnit.AMPS);
+        left.setCurrentAlert(4, CurrentUnit.AMPS);
 
         pidController.targetValue = 0;
 
@@ -49,25 +57,36 @@ public class ExtendoControllerPID {
     public void setPower(double power) {
         if(power != 0) pidON = false;
         if(position < MAX_POS - 50 && power > 0) {
-            extendo.setPower(power);
+            left.setPower(power);
             currentState = States.EXTENDED;
         }
-        if(position > 10 && power < 0) extendo.setPower(power);
+        if(position > 10 && power < 0) {
+            left.setPower(power);
+        }
     }
 
 
     public void goDown() {
         pidON = true;
-        pidController.targetValue = 0;
+        pidController.targetValue = TRANSFER_POZ;
         currentState = States.RETRACT_PID;
     }
 
     public void goDownTillMotorOverCurrent() {
-        extendo.setPower(magicPOWER);
+        timer.reset();
+        left.setPower(magicPOWER);
         currentState = States.RETRACT_MAGIC;
+        pidON = false;
     }
 
     public void update() {
+
+        if (kp != pidController.p) pidController.p = kp;
+        if (ki != pidController.p) pidController.i = ki;
+        if (kd != pidController.p) pidController.d = kd;
+
+        position = getPosition();
+
 
         switch (currentState)
         {
@@ -79,7 +98,7 @@ public class ExtendoControllerPID {
             }
             case RETRACT_MAGIC:
             {
-                if(extendo.isOverCurrent())
+                if(left.isOverCurrent() || timer.milliseconds() > time_for_MAGIC)
                 {
                     ResetEncoders();
                     pidController.targetValue = 0;
@@ -91,17 +110,31 @@ public class ExtendoControllerPID {
         }
         if(pidON)
         {
-            position = extendo.getCurrentPosition();
-            //pidController.targetValue = rowPosition[targetRow];
             double powerExtendo = pidController.update(position);
-            extendo.setPower(powerExtendo);
+            left.setPower(powerExtendo);
         }
     }
 
+    int getPosition() {
+        return left.getCurrentPosition();
+    }
 
     public void ResetEncoders() {
-        extendo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        extendo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    public void goToPoz (int poz){
+        pidON = true;
+        pidController.targetValue = poz;
+        currentState = States.EXTENDED;
+    }
+
+    public void goToMid () {
+        goToPoz(MID_POS);
+    }
+    public void goToDrive () {
+        goToPoz(DRIVE_POS);
     }
 }

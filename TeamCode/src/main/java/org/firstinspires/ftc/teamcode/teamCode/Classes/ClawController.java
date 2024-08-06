@@ -8,15 +8,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class ClawController {
     Servo ClawLeft, ClawRight;
 
-    public static double LeftOpen = 0.5;
-    public static double LeftClose = 0.6;
-    public static double RightOpen = 0.5;
-    public static double RightClose = 0.6;
-    public static double LeftArrange= 0.9;
+    public static double LeftOpen = 0.1;
+    public static double LeftClose = 0.65;
+    public static double RightOpen = 0.8;
+    public static double RightClose = 0.2;
+    public static double LeftArrange= 0.65;
     public ClawController(HardwareMap map)
     {
-        ClawLeft = map.get(Servo.class, "clawLeft");
-        ClawRight = map.get(Servo.class, "clawRight");
+        ClawLeft = map.get(Servo.class, "s0e");
+        ClawRight = map.get(Servo.class, "s2");
     }
 
 

@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.teamCode.Classes;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+@Config
 public class OuttakeSubsystem {
     public Outtake4Bar bar;
     public OuttakeJoint joint;
@@ -20,7 +22,6 @@ public class OuttakeSubsystem {
 
     public void goToReady () {
         rotation.goToLevel();
-        claw.goToIntake();
         bar.goToReady();
         joint.goToReady();
     }
@@ -33,6 +34,18 @@ public class OuttakeSubsystem {
     public void goToPlace() {
         bar.goToDrop();
         joint.goToDrop();
+        rotation.goToLevel();
+    }
+    public void goToMoving() {
+        rotation.goToLevel();
+        bar.goingToPizdaMati();
+        joint.goToReady();
+    }
+
+    public void goToPreloads() {
+        bar.goToPreloads();
+        joint.goToDrop();
+        rotation.goToLevel();
     }
 
 }

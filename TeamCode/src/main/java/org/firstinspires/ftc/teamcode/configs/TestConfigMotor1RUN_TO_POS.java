@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp
 @Config
@@ -13,10 +14,14 @@ public class TestConfigMotor1RUN_TO_POS extends LinearOpMode {
     public static double speed = 0;
     public static int target = 0;
     public static String name = "";
+    public static boolean isReversed = false;
     @Override
     public void runOpMode() throws InterruptedException {
 
         motor = hardwareMap.get(DcMotorEx.class, name);
+        if(isReversed == true) {
+            motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
         waitForStart();
         while(opModeIsActive())
         {
