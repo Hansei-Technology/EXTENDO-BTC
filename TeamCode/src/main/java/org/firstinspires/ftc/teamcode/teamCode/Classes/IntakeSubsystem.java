@@ -39,7 +39,7 @@ public class IntakeSubsystem {
     }
     public State currentState = State.OFF, previousState = State.OFF;
     public static int time_to_settle = 1000;
-    public static int time_to_reverse = 1000;
+    public static int time_to_reverse = 300;
 
     public boolean isFull() {
         return currentState == State.FULL;
@@ -68,6 +68,9 @@ public class IntakeSubsystem {
 
     public void closeLatch() {
         storage.close();
+    }
+    public void holdLatch() {
+        storage.hold();
     }
 
 
@@ -115,7 +118,7 @@ public class IntakeSubsystem {
             case AUTO_GOT_PIXELS_WAITING:
                 if(timer.milliseconds() > time_to_settle) {
                     currentState = State.FULL;
-                    intakeController.reverse();
+                    intakeController.reversePreload();
                     //openLatch();
                     timer.reset();
                 }

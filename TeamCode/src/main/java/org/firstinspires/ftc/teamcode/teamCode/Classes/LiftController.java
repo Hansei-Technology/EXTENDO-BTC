@@ -61,18 +61,18 @@ public class LiftController {
     }
 
     public void setPower(double power) {
-//        if(Math.abs(power - 0.2) > 0) pidON = false;
-//        else {
-//            if(position < MAX_POS - 50 && power > 0) {
-//                left.setPower(power);
-//                right.setPower(power);
-//                currentState = States.EXTENDED;
-//            }
-//            if(position > 10 && power < 0) {
-//                left.setPower(power);
-//                right.setPower(power);
-//            }
-//        }
+        if(power > 0.1 || power < -0.1) {
+            pidON = false;
+            if(position < MAX_POS - 50 && power > 0) {
+                left.setPower(power);
+                right.setPower(power);
+                currentState = States.EXTENDED;
+            }
+            if(position > 10 && power < 0) {
+                left.setPower(power);
+                right.setPower(power);
+            }
+        }
     }
 
 
@@ -104,7 +104,7 @@ public class LiftController {
             case RETRACT_PID:
             {
                 pidON = true;
-                if(position <= 0) currentState = States.RETRACTED;
+                if(position <= 5) currentState = States.RETRACTED;
                 break;
             }
             case RETRACT_MAGIC:

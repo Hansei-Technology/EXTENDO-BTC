@@ -65,6 +65,11 @@ import java.util.List;
 public final class MecanumDrive {
 
     public void robotCentric(Gamepad gamepad1) {
+        double speed = 1;
+        if(gamepad1.left_stick_button || gamepad1.right_stick_button)
+            speed = 0.3;
+        else speed = 1;
+
         double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
         double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
         double rx = gamepad1.right_stick_x;
@@ -78,10 +83,10 @@ public final class MecanumDrive {
         double frontRightPower = (y - x - rx) / denominator;
         double backRightPower = (y + x - rx) / denominator;
 
-        leftFront.setPower(frontLeftPower);
-        leftBack.setPower(backLeftPower);
-        rightFront.setPower(frontRightPower);
-        rightBack.setPower(backRightPower);
+        leftFront.setPower(frontLeftPower * speed);
+        leftBack.setPower(backLeftPower * speed);
+        rightFront.setPower(frontRightPower * speed);
+        rightBack.setPower(backRightPower * speed);
     }
 
 
@@ -121,6 +126,7 @@ public final class MecanumDrive {
         public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;
         public double headingVelGain = 0.0; // shared with turn
+        public String imu_name = "imu";
     }
 
     public static Params PARAMS = new Params();
@@ -266,7 +272,7 @@ public final class MecanumDrive {
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        lazyImu = new LazyImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
+        lazyImu = new LazyImu(hardwareMap, PARAMS.imu_name, new RevHubOrientationOnRobot(
                 PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();

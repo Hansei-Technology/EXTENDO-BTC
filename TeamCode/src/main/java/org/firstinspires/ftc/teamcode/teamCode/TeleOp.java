@@ -43,7 +43,7 @@ public class TeleOp extends LinearOpMode {
     TransferState currentState = TransferState.NO_TRANSFER;
     TransferState previousState = TransferState.NO_TRANSFER;
 
-    public static int time_to_ready_outtake = 1000;
+    public static int time_for_latch = 1000;
     public static int time_outtake_down = 300;
     public static int time_for_claw = 250;
     public static int time_outtake_up = 300;
@@ -74,12 +74,14 @@ public class TeleOp extends LinearOpMode {
             if (sg1.left_bumper) outtake.claw.toggleLeft();
             if (sg1.right_bumper) outtake.claw.toggleRight();
 
-            if (gamepad1.a) lift.goDown();
+            if (gamepad1.a) {
+                lift.goDown();
+                outtake.goToMoving();
+            }
             if (gamepad1.b)  {
                 lift.goToLow();
                 outtake.goToPlace();
             }
-            if (gamepad1.x) outtake.goToMoving();
 
             if (gamepad1.dpad_right) outtake.rotation.goRight();
             else if (gamepad1.dpad_left) outtake.rotation.goLeft();
@@ -87,6 +89,7 @@ public class TeleOp extends LinearOpMode {
 
             lift.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
 
+            if(gamepad1.dpad_up) outtake.goToArrange();
 
             //controller 2
             if (gamepad2.dpad_down) intake.takePixel(Intake4Bar.POSE.pixel1);
@@ -101,12 +104,38 @@ public class TeleOp extends LinearOpMode {
                 outtake.claw.goToIntake();
                 outtake.goToMoving();
                 transferTimer.reset();
-                intake.openLatch(); //ro2 au probleme cu asta(exista un state special)
+                //intake.openLatch(); //ro2 au probleme cu asta(exista un state special)
+                intake.turnOff();
             }
 
             if (gamepad2.dpad_right) intake.currentState = IntakeSubsystem.State.GOT_PIXELS_WAITING;
 
             if (gamepad2.dpad_left) intake.intakeController.turnOff();
+
+
+            //pozitii stack
+            if (Math.abs(gamepad2.left_stick_y) > Math.abs(gamepad2.left_stick_x))
+            {
+                if (gamepad2.left_stick_y < 0) //5 conuri in stack
+                {
+                    intake.takePixel(Intake4Bar.POSE.pixel5);
+                }
+                else //3 conuri in stack
+                {
+                    intake.takePixel(Intake4Bar.POSE.pixel3);
+                }
+            }
+            else if (Math.abs(gamepad2.left_stick_x) > Math.abs(gamepad2.left_stick_y))
+            {
+                if (gamepad2.left_stick_x > 0) //4 conuri in stack
+                {
+                    intake.takePixel(Intake4Bar.POSE.pixel4);
+                }
+                else //2 conuri in stack
+                {
+                    intake.takePixel(Intake4Bar.POSE.pixel2);
+                }
+            }
 
 
             transferUpdate();
@@ -129,16 +158,19 @@ public class TeleOp extends LinearOpMode {
             case NO_TRANSFER:
 
                 if(intake.isFull()) {
-                    //currentState = TransferState.SLIDES_RETRACTING;
-                    outtake.goToMoving();
+                    currentState = TransferState.SLIDES_RETRACTING;
+//                    intake.intakeController.turnOn();
+                    lift.goDown();
+                    extendo.goDown();
                     outtake.claw.goToIntake();
+                    outtake.goToMoving();
                     transferTimer.reset();
                 }
                 break;
 
 //            case NO_EXTENDO:
 //
-//                if(transferTimer.milliseconds() > time_to_ready_outtake) {
+//                if(transferTimer.milliseconds() > time_for_latch) {
 //                    currentState = TransferState.OUTTAKE_READY;
 //                }
 //                break;
@@ -146,14 +178,23 @@ public class TeleOp extends LinearOpMode {
             case SLIDES_RETRACTING:
 
                 if (extendo.currentState == ExtendoControllerPID.States.RETRACTED &&
-                        lift.currentState == LiftController.States.RETRACTED &&
-                        transferTimer.milliseconds() > time_to_ready_outtake) {
+                        lift.currentState == LiftController.States.RETRACTED) {
+                    currentState = TransferState.WAITING_FOR_LATCH;
+                    transferTimer.reset();
+                    intake.openLatch();
+                }
+                break;
+                
+            case WAITING_FOR_LATCH:
+                
+                if(transferTimer.milliseconds() > time_for_latch) {
                     currentState = TransferState.OUTTAKE_READY;
                 }
                 break;
 
             case OUTTAKE_READY:
 
+                intake.turnOff();
                 outtake.goToIntake();
                 currentState = TransferState.WAITING_FOR_OUTTAKE_DOWN;
                 transferTimer.reset();

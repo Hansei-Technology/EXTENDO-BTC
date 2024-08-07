@@ -26,6 +26,12 @@ public class OuttakeSubsystem {
         joint.goToReady();
     }
 
+    public void goToArrange() {
+        rotation.goToLevel();
+        joint.goToPlaceAuto();
+        bar.goToDrop();
+        claw.goToArrange();
+    }
     public void goToIntake () {
         bar.goToIntake();
         joint.goToIntake();

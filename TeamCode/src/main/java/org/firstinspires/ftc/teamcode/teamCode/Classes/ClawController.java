@@ -11,7 +11,7 @@ public class ClawController {
     public static double LeftOpen = 0.1;
     public static double LeftClose = 0.65;
     public static double RightOpen = 0.8;
-    public static double RightClose = 0.2;
+    public static double RightClose = 0.22;
     public static double LeftArrange= 0.65;
     public ClawController(HardwareMap map)
     {
@@ -69,7 +69,7 @@ public class ClawController {
 
     public void goToArrange() {
         ClawLeft.setPosition(LeftArrange);
-        closeRight();
+        openRight();
     }
 
     public boolean isEmpty() {
