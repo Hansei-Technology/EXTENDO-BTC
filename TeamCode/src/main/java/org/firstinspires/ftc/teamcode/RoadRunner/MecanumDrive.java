@@ -272,7 +272,11 @@ public final class MecanumDrive {
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
+<<<<<<< Updated upstream
         lazyImu = new LazyImu(hardwareMap, PARAMS.imu_name, new RevHubOrientationOnRobot(
+=======
+        lazyImu = new LazyImu(hardwareMap, "imu_ada", new RevHubOrientationOnRobot(
+>>>>>>> Stashed changes
                 PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
