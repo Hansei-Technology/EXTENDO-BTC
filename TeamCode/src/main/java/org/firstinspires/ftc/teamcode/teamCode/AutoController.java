@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.teamCode.Classes.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.LiftController;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.OuttakeSubsystem;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 @Config
 public class AutoController extends Thread{
 
@@ -44,13 +46,25 @@ public class AutoController extends Thread{
     public static int time_outtake_up = 350;
     
     public static double nr_of_cycle = 0;
+    public final AtomicBoolean runThread = new AtomicBoolean(true);
 
     @Override
     public void run() {
 
-        while (!isInterrupted()) {
-            update();
+//        while (!isInterrupted()) {
+//            update();
+//        }
+
+        while(runThread.get())
+        {
+            try{
+                update();
+            } catch (Exception e)
+            {
+                Thread.currentThread().interrupt();
+            }
         }
+        Thread.currentThread().interrupt();
     }
 
     public void takeNextPixel() {

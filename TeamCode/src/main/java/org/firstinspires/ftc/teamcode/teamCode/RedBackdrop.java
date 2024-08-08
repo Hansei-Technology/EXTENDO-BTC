@@ -50,6 +50,7 @@ public class RedBackdrop extends LinearOpMode {
 
     ElapsedTime timer;
     ElapsedTime timer_collect;
+    ElapsedTime time_left_of_auto;
     MecanumDrive drive;
 
     enum State {
@@ -86,17 +87,19 @@ public class RedBackdrop extends LinearOpMode {
     public static double x_yellow_preload_center = 41, y_yellow_preload_center = -29, angle_yellow_preload_center = 180;
     public static double x_yellow_preload_left = 41, y_yellow_preload_left = -25, angle_yellow_preload_left = 180;
 
-    public static double x_collect = -29.8, y_collect = -7.8, angle_collect = 180;
-    public static double x_collect2 = -29.8, y_collect2 = -7.8, angle_collect2 = 180;
-    public static double x_collect3 = -30, y_collect3 = -7.8, angle_collect3 = 180;
+    public static double x_collect = -28, y_collect = -7.8, angle_collect = 181.5;
+    public static double x_collect2 = -29.5, y_collect2 = -7.8, angle_collect2 = 180;
+    public static double x_collect3 = -31, y_collect3 = -7.8, angle_collect3 = 180;
     public static double x_score = 49.5, y_score = -24.5, angle_score = 210;
 
     public static double x_safe = 22, y_safe = -7.8, angle_safe = 180;
+    public boolean exitLoop = false;
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry(), telemetry);
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
         timer = new ElapsedTime();
+        time_left_of_auto = new ElapsedTime();
         autoController = new AutoController(hardwareMap);
 
         double voltage;
@@ -156,8 +159,8 @@ public class RedBackdrop extends LinearOpMode {
 
         CS = State.GOING_PRELOADS;
 
-
-        while (opModeIsActive() && !isStopRequested()) {
+        time_left_of_auto.reset();
+        while (opModeIsActive() && !isStopRequested() && !exitLoop) {
             try{
                 switch (CS) {
                     case GOING_PRELOADS:
@@ -237,7 +240,7 @@ public class RedBackdrop extends LinearOpMode {
 
                     case COLLECTING:
 //                    timer_collect.reset();
-
+                        autoController.intake.closeLatch();
                         //autoController.extendo.goToPoz(1130);
                         if(timer.milliseconds() > time_collect1) {
                             autoController.takePixelFromStack(pixel_count);
@@ -251,7 +254,7 @@ public class RedBackdrop extends LinearOpMode {
                             sleep(300);
                             autoController.intake.currentState = IntakeSubsystem.State.AUTO_OFF;
                             autoController.intake.intakeController.turnOn();
-
+                            autoController.intake.holdLatch();
                             CS = State.GOING_SAFE_SCORE;
                             autoController.extendo.goDown();
                         }
@@ -298,7 +301,8 @@ public class RedBackdrop extends LinearOpMode {
                         timer.reset();
                         break;
                     case PARK:
-                        autoController.interrupt();
+                        autoController.runThread.set(false);
+                        exitLoop = true;
                     case SCORE:
                         if(timer.milliseconds() > time_place) {
                             autoController.outtake.claw.goToIntake();
@@ -317,18 +321,19 @@ public class RedBackdrop extends LinearOpMode {
                         }
                 }
             } catch (Exception e) {
-                autoController.interrupt();
+//                autoController.interrupt();
+                autoController.runThread.set(false);
             }
 
             telemetry.addData("state", CS);
             telemetry.addData("timer", timer.milliseconds());
+            telemetry.addData("time_left", 30-time_left_of_auto.seconds());
             telemetry.update();
             drive.updatePoseEstimate();
         }
         if (isStopRequested()) {
-            autoController.interrupt();
-            stop();
+            autoController.runThread.set(false);
         }
-        autoController.interrupt();
+        autoController.runThread.set(false);
     }
 }
