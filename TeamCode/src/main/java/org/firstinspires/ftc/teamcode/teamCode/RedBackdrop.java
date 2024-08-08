@@ -47,8 +47,8 @@ public class RedBackdrop extends LinearOpMode {
     public static int time_place2 = 500;
     public static int time_lift = 300;
 
-    public static int extendoPozPreload = 470;
-    public static int extendoPozCollect = 1100;
+    public static int extendoPozPreload = 480;
+    public static int extendoPozCollect = 1200;
 
     ElapsedTime timer;
     ElapsedTime timer_score;
@@ -81,7 +81,7 @@ public class RedBackdrop extends LinearOpMode {
     State CS = State.NOTHING, PS = State.NOTHING; //currentState/previousState
 
     public static double x_start = 15.5, y_start = -64, angle_start = -90;
-    public static double x_purple_preload_right = 50.5, y_purple_preload_right = -44, angle_purple_preload_right = 158;
+    public static double x_purple_preload_right = 47, y_purple_preload_right = -45, angle_purple_preload_right = 158;
     public static double x_purple_preload_center = 48, y_purple_preload_center = -35, angle_purple_preload_center = 180;
     public static double x_purple_preload_left = 48, y_purple_preload_left = -35, angle_purple_preload_left = 180;
 
@@ -95,7 +95,7 @@ public class RedBackdrop extends LinearOpMode {
     public static double x_score = 47, y_score = -28, angle_score = -160;
     public static double x_park = 48, y_park = -22.5, angle_park = 180;
 
-    public static double x_safe = 22, y_safe = -7.8, angle_safe = 180;
+    public static double x_safe = 22, y_safe = -7.5, angle_safe = 180;
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -278,18 +278,19 @@ public class RedBackdrop extends LinearOpMode {
                     );
                     autoController.intake.intakeController.turnOff();
                     autoController.intake.openLatch();
-//                    autoController.startTransfer();
-//                    sleep(300);
-//                    autoController.outtake.goToIntake();
-//                    autoController.startTransfer();
+                    autoController.startTransfer();
+                    sleep(300);
+                    autoController.outtake.goToIntake();
+                    autoController.startTransfer();
 
-                    while (autoController.intake.pololuSensor.detect() > 0) {
-                        autoController.startTransfer();
-                        sleep(300);
-                        autoController.outtake.goToIntake();
-                        autoController.startTransfer();
-                        sleep(1000);
-                    }
+                    //INCERCARE DE MAI MULTE ORI
+//                    while (autoController.intake.pololuSensor.detect() > 0) {
+//                        autoController.startTransfer();
+//                        sleep(300);
+//                        autoController.outtake.goToIntake();
+//                        autoController.startTransfer();
+//                        sleep(1000);
+//                    }
                     timer.reset();
                     CS = State.SAFE_SCORE;
                     break;

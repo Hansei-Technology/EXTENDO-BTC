@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class IntakeController {
     DcMotorEx motor;
-    public static double speed1 = 1, speed2 = -1, speed3 = -0.4;
+    public static double speed1 = 1, speed2 = -1, speed3 = -0.7;
     public IntakeController(HardwareMap map) {
         motor = map.get(DcMotorEx.class, "m3");
 
