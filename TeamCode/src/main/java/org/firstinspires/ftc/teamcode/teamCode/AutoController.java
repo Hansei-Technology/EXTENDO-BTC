@@ -58,6 +58,11 @@ public class AutoController extends Thread{
         lastPixel = intake.intake4Bar.goDown1pixel(lastPixel);
     }
 
+    public void takePixelFromStack(int pixel_nr){
+        intake.takePixel(pixel_nr);
+    }
+
+
     public void update() {
         
         lift.update();

@@ -51,6 +51,29 @@ public class IntakeSubsystem {
         currentState = State.ON;
     }
 
+    public void takePixel(int pixelNumber) {
+        switch (pixelNumber) {
+            case 5:
+                intake4Bar.goTo(Intake4Bar.POSE.pixel5);
+                break;
+            case 4:
+                intake4Bar.goTo(Intake4Bar.POSE.pixel4);
+                break;
+            case 3:
+                intake4Bar.goTo(Intake4Bar.POSE.pixel3);
+                break;
+            case 2:
+                intake4Bar.goTo(Intake4Bar.POSE.pixel2);
+                break;
+            case 1:
+                intake4Bar.goTo(Intake4Bar.POSE.pixel1);
+                break;
+        }
+        intakeController.turnOn();
+        currentState = State.ON;
+    }
+
+
     public void takePixelAuto(Intake4Bar.POSE poz) {
         intake4Bar.goTo(poz);
         intakeController.turnOn();

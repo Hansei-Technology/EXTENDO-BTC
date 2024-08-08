@@ -11,6 +11,8 @@ public class OuttakeRotation {
     public static double Servo_Left = 0.75;
     public static double Servo_Right = 0.4;
 
+    public static double Servo_left_90_deg = 0.87;
+
     public OuttakeRotation(HardwareMap map)
     {
         servo = map.get(Servo.class, "s1e");
@@ -30,6 +32,12 @@ public class OuttakeRotation {
     {
         servo.setPosition(Servo_Left);
     }
+
+    public void go90Deg()
+    {
+        servo.setPosition(Servo_left_90_deg);
+    }
+
     public void goRight()
     {
         servo.setPosition(Servo_Right);
