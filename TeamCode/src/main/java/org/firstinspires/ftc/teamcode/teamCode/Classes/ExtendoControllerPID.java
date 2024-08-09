@@ -50,6 +50,7 @@ public class ExtendoControllerPID {
         left.setCurrentAlert(4, CurrentUnit.AMPS);
 
         pidController.targetValue = 0;
+        pidController.maxOutput = 1;
 
         timer = new ElapsedTime();
     }
@@ -127,9 +128,20 @@ public class ExtendoControllerPID {
 
     public void goToPoz (int poz){
         pidON = true;
+        pidController.maxOutput=1;
         pidController.targetValue = poz;
         currentState = States.EXTENDED;
     }
+
+
+
+    public void goToPozSlow(int poz){
+        pidON = true;
+//        pidController.maxOutput=0.5;
+        pidController.targetValue = poz;
+        currentState = States.EXTENDED;
+    }
+
 
     public void goToMid () {
         goToPoz(MID_POS);

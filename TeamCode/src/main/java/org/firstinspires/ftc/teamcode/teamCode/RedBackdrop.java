@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.ThreadPool;
 
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.ClawController;
@@ -87,12 +88,14 @@ public class RedBackdrop extends LinearOpMode {
     public static double x_yellow_preload_center = 41, y_yellow_preload_center = -29, angle_yellow_preload_center = 180;
     public static double x_yellow_preload_left = 41, y_yellow_preload_left = -25, angle_yellow_preload_left = 180;
 
-    public static double x_collect = -28, y_collect = -7.8, angle_collect = 181.5;
-    public static double x_collect2 = -29.5, y_collect2 = -7.8, angle_collect2 = 180;
-    public static double x_collect3 = -31, y_collect3 = -7.8, angle_collect3 = 180;
+    public static double x_collect = -27, y_collect = -7.8, angle_collect = 180;
+    public static double x_collect2 = -27, y_collect2 = -7.8, angle_collect2 = 180;
+    public static double x_collect3 = -27, y_collect3 = -7.8, angle_collect3 = 180;
     public static double x_score = 49.5, y_score = -24.5, angle_score = 210;
 
     public static double x_safe = 22, y_safe = -7.8, angle_safe = 180;
+
+    public static int poz_extendo_collect = 1250;
     public boolean exitLoop = false;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -206,14 +209,18 @@ public class RedBackdrop extends LinearOpMode {
                     case GOING_COLLECT:
 
 //                    Actions.runBlocking(goToCollect);
-                        autoController.extendo.goToPoz(1255);
+                        autoController.extendo.goToPoz(poz_extendo_collect);
+//                        Actions.runBlocking(drive.actionBuilder(drive.pose).turnTo(180).build());
+//                        autoController.wait(300);
+//                        Thread.currentThread().notifyAll();
+//                        autoController.wait();
                         autoController.intake.takePixelAuto(autoController.lastPixel);
 
                         switch(noOfCycle)
                         {
                             case CYCLE_1:
                                 Actions.runBlocking(drive.actionBuilder(drive.pose)
-                                        .strafeTo(collect.position)
+                                        .strafeToConstantHeading(collect.position)
                                         .build());
                                 noOfCycle = CYCLE_NO.CYCLE_2;
                                 break;
@@ -222,13 +229,13 @@ public class RedBackdrop extends LinearOpMode {
                                 autoController.intake.takePixelAuto(autoController.lastPixel);
 
                                 Actions.runBlocking(drive.actionBuilder(drive.pose)
-                                        .strafeTo(collect2.position)
+                                        .strafeToConstantHeading(collect2.position)
                                         .build());
                                 noOfCycle = CYCLE_NO.CYCLE_3;
                                 break;
                             case CYCLE_3:
                                 Actions.runBlocking(drive.actionBuilder(drive.pose)
-                                        .strafeTo(collect3.position)
+                                        .strafeToConstantHeading(collect3.position)
                                         .build());
                                 noOfCycle = CYCLE_NO.PARK;
 
@@ -242,13 +249,22 @@ public class RedBackdrop extends LinearOpMode {
 //                    timer_collect.reset();
                         autoController.intake.closeLatch();
                         //autoController.extendo.goToPoz(1130);
+
+//                        while(autoController.intake.pololuSensor.detect()<2 && timer.milliseconds() < time_at_stack)
+//                        {
+//                            autoController.extendo.setPower(0.5);
+//                            autoController.takePixelFromStack(pixel_count);
+//                            pixel_count--;
+//                        }
+
                         if(timer.milliseconds() > time_collect1) {
                             autoController.takePixelFromStack(pixel_count);
                             timer.reset();
                             pixel_count--;
                         }
 //|| timer_collect.milliseconds() < time_at_stack
-                        if(autoController.intake.pololuSensor.detect() == 2 || timer.milliseconds() < time_at_stack) {
+                        if(autoController.intake.pololuSensor.detect()<2 && timer.milliseconds() < time_at_stack) {
+                            autoController.extendo.goToPoz(poz_extendo_collect);
                             sleep(300);
                             autoController.intake.intakeController.reverse();
                             sleep(300);
@@ -268,24 +284,25 @@ public class RedBackdrop extends LinearOpMode {
                                         .strafeToLinearHeading(safe.position, safe.heading)
                                         .build()
                         );
-                        CS = State.SAFE_SCORE;
                         timer.reset();
                         autoController.intake.intakeController.turnOff();
                         autoController.intake.openLatch();
                         autoController.startTransfer();
                         sleep(300);
+                        autoController.intake.openLatch();
                         autoController.outtake.goToIntake();
                         autoController.startTransfer();
-                        //sleep(10000);
+                        CS = State.GOING_SCORE;
+                        sleep(1000);
                         break;
 
-                    case SAFE_SCORE:
-
-                        if(timer.milliseconds() > time_safe) {
-                            //autoController.startTransfer();
-                            CS = State.GOING_SCORE;
-                        }
-                        break;
+//                    case SAFE_SCORE:
+//
+//                        if(timer.milliseconds() > time_safe) {
+//                            //autoController.startTransfer();
+//                            CS = State.GOING_SCORE;
+//                        }
+//                        break;
 
                     case GOING_SCORE:
 

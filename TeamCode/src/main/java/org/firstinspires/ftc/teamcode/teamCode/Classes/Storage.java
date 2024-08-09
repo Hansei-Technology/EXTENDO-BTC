@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Storage {
     Servo servo;
     public static double openPos = 0.23;
-    public static double closedPos = 0.57;
+    public static double closedPos = 0.58;
 
     public static double holdPos = 0.6;
     public Storage(HardwareMap map) {

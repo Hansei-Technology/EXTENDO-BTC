@@ -8,12 +8,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Intake4Bar {
     Servo servo;
 
-    public static double poz1 = 0.38;
-    public static double poz2 = 0.421;
-    public static double poz3 = 0.454;
-    public static double poz4 = 0.478;
-    public static double poz5 = 0.5;
-    public static double movingPos = 0.5;
+    public static double poz1 = 0.39;
+    public static double poz2 = 0.265;
+    public static double poz3 = 0.23;
+    public static double poz4 = 0.215;
+    public static double poz5 = 0.2;
+    public static double movingPos = 0.1;
 
 
     public Intake4Bar(HardwareMap map) {
