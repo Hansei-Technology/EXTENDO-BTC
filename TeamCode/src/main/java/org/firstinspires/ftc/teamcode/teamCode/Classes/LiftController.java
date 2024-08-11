@@ -152,4 +152,20 @@ public class LiftController {
     public void goToLow () {
         goToPoz(LOW_POS);
     }
+
+    public void setRawPower(double power){
+        left.setPower(power);
+        right.setPower(power);
+    }
+
+    public void runToPos(int pos) {
+        left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        left.setPower(0.4);
+        right.setPower(0.4);
+        left.setTargetPosition(pos);
+        right.setTargetPosition(pos);
+        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
 }

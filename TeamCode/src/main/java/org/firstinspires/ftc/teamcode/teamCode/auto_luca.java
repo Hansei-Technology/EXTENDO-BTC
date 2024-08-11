@@ -1,17 +1,11 @@
 package org.firstinspires.ftc.teamcode.teamCode;
 
 
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.InstantAction;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -31,19 +25,49 @@ import java.util.List;
 @Config
 @Autonomous
 
-public class test_auto extends LinearOpMode {
+public class auto_luca extends LinearOpMode {
     AutoController autoController;
+    public static int time_preloads = 800;
+    public static int time_preloads2 = 1000;
+    public static int time_safe = 2000;
+    public static int time_collect = 2500;
+    public static int time_collect1 = 700;
+    public static int time_pixel1 = 1000;
+    public static int time_pixel2 = 350;
+    public static int time_place = 300;
+    public static int time_place2 = 500;
+    public static int time_at_stack = 1000;
+    public static int pixel_count=5;
 
     ElapsedTime timer;
     ElapsedTime timer_collect;
     ElapsedTime time_left_of_auto;
-    public MecanumDrive drive;
-    public LiftController liftController;
-    public ExtendoControllerPID extendoController;
-    public IntakeSubsystem intake;
-    public OuttakeSubsystem outtake;
+    MecanumDrive drive;
 
+    enum State {
 
+        NOTHING,
+        GOING_PRELOADS,
+        PRELOADS,
+        GOING_SAFE_COLLECT,
+        SAFE_COLLECT,
+        GOING_COLLECT,
+        COLLECTING,
+        GOING_SAFE_SCORE,
+        SAFE_SCORE,
+        GOING_SCORE,
+        PARK, SCORE
+    }
+    public enum CYCLE_NO {
+        CYCLE_1,
+        CYCLE_2,
+        CYCLE_3,
+        PARK,
+    }
+
+    CYCLE_NO noOfCycle = CYCLE_NO.CYCLE_1;
+
+    State CS = State.NOTHING, PS = State.NOTHING; //currentState/previousState
 
     public static double x_start = 15.5, y_start = -64, angle_start = -90;
     public static double x_purple_preload_right = 49.3, y_purple_preload_right = -35, angle_purple_preload_right = 180;
@@ -54,20 +78,41 @@ public class test_auto extends LinearOpMode {
     public static double x_yellow_preload_center = 41, y_yellow_preload_center = -29, angle_yellow_preload_center = 180;
     public static double x_yellow_preload_left = 41, y_yellow_preload_left = -25, angle_yellow_preload_left = 180;
 
-    public static double x_collect = -27, y_collect = -7.8, angle_collect = 179;
+    public static double x_collect = -27, y_collect = -7.8, angle_collect = 180;
     public static double x_collect2 = -27, y_collect2 = -7.8, angle_collect2 = 180;
-    public static double x_collect3 = -27, y_collect3 = -7.8, angle_collect3 = 181;
+    public static double x_collect3 = -27, y_collect3 = -7.8, angle_collect3 = 180;
     public static double x_score = 49.5, y_score = -24.5, angle_score = 210;
 
     public static double x_safe = 22, y_safe = -7.8, angle_safe = 180;
+    public int poz_extendo_preload = 200;
 
     public static int poz_extendo_collect = 1250;
     public boolean exitLoop = false;
+
+    public LiftController lift;
+    public IntakeSubsystem intake;
+    public OuttakeSubsystem outtake;
+    public ExtendoControllerPID extendo;
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry(), telemetry);
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
         timer = new ElapsedTime();
+        time_left_of_auto = new ElapsedTime();
+
+        lift = new LiftController(hardwareMap);
+        extendo = new ExtendoControllerPID(hardwareMap);
+        intake = new IntakeSubsystem(hardwareMap);
+        outtake = new OuttakeSubsystem(hardwareMap);
+
+        lift.goToPoz(0);
+        extendo.goDown();
+        outtake.goToMoving();
+        outtake.claw.closeRight();
+        double voltage;
+        VoltageSensor batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
+        voltage = batteryVoltageSensor.getVoltage();
+
 
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -92,30 +137,36 @@ public class test_auto extends LinearOpMode {
 
 
         drive = new MecanumDrive(hardwareMap, start_pose);
-        liftController = new LiftController(hardwareMap);
-        extendoController = new ExtendoControllerPID(hardwareMap);
-        intake = new IntakeSubsystem(hardwareMap);
-        outtake = new OuttakeSubsystem(hardwareMap);
+
 
         Action goToPreloads = drive.actionBuilder(start_pose)
                 .strafeToLinearHeading(purpleRight.position, purpleRight.heading)
                 .build();
+
+        while (opModeInInit()) {
+
+            sleep(20);
+
+            //DETECTION
+            drive.lazyImu.get().resetYaw();
+
+            telemetry.addData("case", "");
+            telemetry.update();
+            sleep(50);
+        }
+
         waitForStart();
-        Actions.runBlocking( new SequentialAction(
-                    goToPreloads,
-                    drive.actionBuilder(purpleRight).strafeToLinearHeading(safe.position, safe.heading).build(),
-                    drive.actionBuilder(safe)
-                            .strafeToLinearHeading(collect.position, collect.heading)
-                            .build(),
-                    drive.actionBuilder(collect)
-                            .strafeToLinearHeading(safe.position, safe.heading)
-                            .build(),
-                    drive.actionBuilder(safe).strafeToLinearHeading(score.position, score.heading).build()
-        ));
+
+        CS = State.GOING_PRELOADS;
+
+        time_left_of_auto.reset();
+        while (opModeIsActive() && !isStopRequested() && !exitLoop) {
+           
+            telemetry.addData("state", CS);
             telemetry.addData("timer", timer.milliseconds());
             telemetry.addData("time_left", 30-time_left_of_auto.seconds());
             telemetry.update();
             drive.updatePoseEstimate();
         }
     }
-
+}

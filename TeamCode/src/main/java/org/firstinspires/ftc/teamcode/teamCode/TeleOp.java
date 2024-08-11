@@ -5,10 +5,13 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utils.StickyGamepad;
+import org.firstinspires.ftc.teamcode.teamCode.Classes.DroneController;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.ExtendoController;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.ExtendoControllerPID;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.Intake4Bar;
@@ -23,8 +26,9 @@ public class TeleOp extends LinearOpMode {
     IntakeSubsystem intake;
     OuttakeSubsystem outtake;
     ExtendoControllerPID extendo;
+    DroneController drone;
     MecanumDrive drive;
-    StickyGamepad sg1;
+    StickyGamepad sg1, sg2;
     ElapsedTime transferTimer;
 
     enum TransferState {
@@ -44,37 +48,42 @@ public class TeleOp extends LinearOpMode {
     TransferState previousState = TransferState.NO_TRANSFER;
 
     public static int time_for_latch = 1000;
-    public static int time_outtake_down = 300;
-    public static int time_for_claw = 250;
-    public static int time_outtake_up = 300;
-
+    public static int time_outtake_down = 1300;
+    public static int time_for_claw = 800;
+    public static int time_outtake_up = 600;
+    public boolean isArragingPixels = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
+
         lift = new LiftController(hardwareMap);
         intake = new IntakeSubsystem(hardwareMap);
         outtake = new OuttakeSubsystem(hardwareMap);
         extendo = new ExtendoControllerPID(hardwareMap);
+        drone = new DroneController(hardwareMap);
         drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         sg1 = new StickyGamepad(gamepad1, this);
+        sg2 = new StickyGamepad(gamepad2, this);
         transferTimer = new ElapsedTime();
 
         outtake.goToMoving();
         //extendo.goDown();
         //lift.goDown();
         intake.closeLatch();
+        intake.intake4Bar.goTo(Intake4Bar.POSE.moving);
 
         waitForStart();
 
         while (opModeIsActive()) {
 
             //controller 1
-            if (sg1.left_bumper) outtake.claw.toggleLeft();
-            if (sg1.right_bumper) outtake.claw.toggleRight();
+            if (sg1.left_bumper) outtake.claw.toggleRight();
+            if (sg1.right_bumper) outtake.claw.toggleLeft();
 
-            if (gamepad1.a) {
+            if (gamepad1.x) {
+                isArragingPixels = false;
                 lift.goDown();
                 outtake.goToMoving();
             }
@@ -83,19 +92,30 @@ public class TeleOp extends LinearOpMode {
                 outtake.goToPlace();
             }
 
-            if (gamepad1.dpad_right) outtake.rotation.goRight();
-            else if (gamepad1.dpad_left) outtake.rotation.goLeft();
-            else outtake.rotation.goToLevel();
+            if(gamepad1.a) {
+                outtake.goToFirstLines();
+            }
 
-            lift.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
+            if (gamepad1.right_stick_y > 0.8) outtake.rotation.goRight();
+            else if (gamepad1.right_stick_y < -0.8) outtake.rotation.goLeft();
+            else if (!isArragingPixels) outtake.rotation.goToLevel();
 
-            if(gamepad1.dpad_up) outtake.goToArrange();
+            if(gamepad1.right_trigger - gamepad1.left_trigger >0.2 || gamepad1.right_trigger - gamepad1.left_trigger < -0.2)
+                lift.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
+            else lift.setPower(0);
+            if(gamepad1.dpad_right){
+                isArragingPixels = true;
+                outtake.goToArrange(lift.position);
+            }
+
+            if(gamepad1.dpad_left) drone.CS = DroneController.droneStatus.RELEASED;
 
             //controller 2
             if (gamepad2.dpad_down) intake.takePixel(Intake4Bar.POSE.pixel1);
             extendo.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
             if (gamepad2.a) extendo.goToDrive();
-            if (gamepad2.y) extendo.goToMid();
+            if (gamepad2.b) extendo.goToMid();
+            if(gamepad2.y) extendo.goToMaxPosTeleop();
 
             if(gamepad2.dpad_up) {
                 currentState = TransferState.SLIDES_RETRACTING;
@@ -137,13 +157,20 @@ public class TeleOp extends LinearOpMode {
                 }
             }
 
+            if(sg2.right_bumper) {
+                sleep(50);
+                intake.toogleLatch();
+            }
+
 
             transferUpdate();
             drive.robotCentric(gamepad1);
             lift.update();
-            intake.update();
+            intake.update(gamepad1);
             extendo.update();
+            drone.update();
             sg1.update();
+            sg2.update();
 
             telemetry.addData("extendo", extendo.currentState);
             telemetry.addData("lift", lift.currentState);
@@ -156,16 +183,16 @@ public class TeleOp extends LinearOpMode {
     void transferUpdate() {
         switch (currentState) {
             case NO_TRANSFER:
-
-                if(intake.isFull()) {
-                    currentState = TransferState.SLIDES_RETRACTING;
-//                    intake.intakeController.turnOn();
-                    lift.goDown();
-                    extendo.goDown();
-                    outtake.claw.goToIntake();
-                    outtake.goToMoving();
-                    transferTimer.reset();
-                }
+                transferTimer.reset();
+//                if(intake.isFull()) {
+//                    currentState = TransferState.SLIDES_RETRACTING;
+////                    intake.intakeController.turnOn();
+//                    lift.goDown();
+//                    extendo.goDown();
+//                    outtake.claw.goToIntake();
+//                    outtake.goToMoving();
+//                    transferTimer.reset();
+//                }
                 break;
 
 //            case NO_EXTENDO:
@@ -176,17 +203,20 @@ public class TeleOp extends LinearOpMode {
 //                break;
 
             case SLIDES_RETRACTING:
-
+                intake.holdLatch();
                 if (extendo.currentState == ExtendoControllerPID.States.RETRACTED &&
                         lift.currentState == LiftController.States.RETRACTED) {
                     currentState = TransferState.WAITING_FOR_LATCH;
                     transferTimer.reset();
-                    intake.openLatch();
+//                    intake.openLatch();
                 }
                 break;
                 
             case WAITING_FOR_LATCH:
-                
+                if(extendo.position < 0){
+                    intake.intake4Bar.goTo(Intake4Bar.POSE.pixel1);
+                    intake.openLatch();
+                }
                 if(transferTimer.milliseconds() > time_for_latch) {
                     currentState = TransferState.OUTTAKE_READY;
                 }
@@ -218,6 +248,7 @@ public class TeleOp extends LinearOpMode {
 
                 if(transferTimer.milliseconds() > time_for_claw) {
                     currentState = TransferState.WAITING_FOR_OUTTAKE_UP;
+                    extendo.goToOuttakeEscape();
                     outtake.goToMoving();
                     transferTimer.reset();
                 }

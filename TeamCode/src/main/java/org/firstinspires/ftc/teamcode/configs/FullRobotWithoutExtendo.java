@@ -91,7 +91,7 @@ public class FullRobotWithoutExtendo extends LinearOpMode {
             transferUpdate();
             drive.robotCentric(gamepad1);
             lift.update();
-            intake.update();
+            intake.update(gamepad1);
             sg1.update();
 
             telemetry.addData("transfer", currentState);

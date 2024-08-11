@@ -33,7 +33,7 @@ public class IntakeSubsystemTester extends LinearOpMode {
             telemetry.addData("timer", intake.timer.milliseconds());
             telemetry.addData("state", intake.currentState);
             telemetry.update();
-            intake.update();
+            intake.update(gamepad1);
         }
     }
 }

@@ -10,9 +10,13 @@ public class Outtake4Bar {
 
     public static double IntakePos = 0.88;
     public static double DropPos = 0.25;
-    public static double ReadyPos = 0.78;
-    public static double PreloadsPos = 0.3;  //4bar pe podea pt spike mark in auto
-    public static double Cristina = 0.72;
+    public static double ReadyPos = 0.85;
+    public static double PreloadsPos = 0.3;
+
+    public static double firstLinesPos = 0.4;
+
+    //4bar pe podea pt spike mark in auto
+    public static double Cristina = 0.78;
 
     public Outtake4Bar(HardwareMap map)
     {
@@ -41,6 +45,10 @@ public class Outtake4Bar {
 
     public void goToDrop() {
         setPosition(DropPos);
+    }
+
+    public void goToFirstLines(){
+        setPosition(firstLinesPos);
     }
 
     public void goToPreloads(){setPosition(PreloadsPos);}

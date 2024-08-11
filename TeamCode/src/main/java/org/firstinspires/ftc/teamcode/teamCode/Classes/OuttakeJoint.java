@@ -8,10 +8,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class OuttakeJoint {
     Servo servo;
 
-    public static double IntakePos = 0.94;
-    public static double ReadyPos = 0.94;
-    public static double DropPos = 0.5;
-    public static double SpikePlace = 0.35;  //4bar pe podea pt spike mark in auto
+    public static double IntakePos = 0.79;
+    public static double ReadyPos = 0.71;
+    public static double DropPos = 0.4;
+    public static double SpikePlace = 0.35;
+    public static double firstLines = 0.24;
+    //4bar pe podea pt spike mark in auto
 
     public OuttakeJoint(HardwareMap map)
     {
@@ -37,5 +39,7 @@ public class OuttakeJoint {
         servo.setPosition(ReadyPos);
     }
     public void goToPlaceAuto(){servo.setPosition(SpikePlace);}
+
+    public void goToFirstLines(){servo.setPosition(firstLines);}
 
 }

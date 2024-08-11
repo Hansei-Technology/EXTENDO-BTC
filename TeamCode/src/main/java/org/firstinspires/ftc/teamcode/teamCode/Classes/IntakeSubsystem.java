@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teamCode.Classes;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -40,6 +41,12 @@ public class IntakeSubsystem {
     public State currentState = State.OFF, previousState = State.OFF;
     public static int time_to_settle = 1000;
     public static int time_to_reverse = 300;
+    public ElapsedTime timerluca;
+    Gamepad.RumbleEffect effectCollect = new Gamepad.RumbleEffect.Builder()
+            .addStep(1.0, 1.0, 100)
+            .addStep(0.0, 0.0, 50)
+            .addStep(1.0, 1.0, 100)
+            .build();
 
     public boolean isFull() {
         return currentState == State.FULL;
@@ -80,6 +87,16 @@ public class IntakeSubsystem {
         currentState = State.AUTO_ON;
     }
 
+    public void takePixelCycle1(){
+        timerluca.reset();
+        intake4Bar.goTo(Intake4Bar.POSE.pixel5);
+        intakeController.turnOn();
+        if(timerluca.milliseconds()>400){
+            intake4Bar.goTo(Intake4Bar.POSE.pixel4);
+            currentState = State.AUTO_ON;
+        }
+    }
+
     public void stop() {
         intakeController.turnOff();
         currentState = State.OFF;
@@ -96,12 +113,17 @@ public class IntakeSubsystem {
         storage.hold();
     }
 
+    public void toogleLatch(){
+        storage.toogleLatch();
+    }
 
-    public void update() {
+
+    public void update(Gamepad gamepad) {
         switch (currentState) {
             case ON:
                 closeLatch();
                 if(pololuSensor.detect() == 2) {
+                    gamepad.runRumbleEffect(effectCollect);
                     currentState = State.GOT_PIXELS_WAITING;
                     timer.reset();
                 }

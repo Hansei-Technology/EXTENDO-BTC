@@ -6,6 +6,8 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -89,13 +91,13 @@ public class RedBackdrop extends LinearOpMode {
     public static double x_yellow_preload_left = 41, y_yellow_preload_left = -25, angle_yellow_preload_left = 180;
 
     public static double x_collect = -27, y_collect = -7.8, angle_collect = 180;
-    public static double x_collect2 = -27, y_collect2 = -7.8, angle_collect2 = 180;
+    public static double x_collect2 = -26.5, y_collect2 = -7.8, angle_collect2 = 180;
     public static double x_collect3 = -27, y_collect3 = -7.8, angle_collect3 = 180;
     public static double x_score = 49.5, y_score = -24.5, angle_score = 210;
 
     public static double x_safe = 22, y_safe = -7.8, angle_safe = 180;
 
-    public static int poz_extendo_collect = 1250;
+    public static int poz_extendo_collect = 1350;
     public boolean exitLoop = false;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -125,9 +127,9 @@ public class RedBackdrop extends LinearOpMode {
 
         Pose2d safe = new Pose2d(x_safe, y_safe, Math.toRadians(angle_safe));
 
-        Pose2d collect = new Pose2d(x_collect, y_collect, angle_collect);
-        Pose2d collect2 = new Pose2d(x_collect2, y_collect2, angle_collect2);
-        Pose2d collect3 = new Pose2d(x_collect3, y_collect3, angle_collect3);
+        Pose2d collect = new Pose2d(x_collect, y_collect, -angle_collect);
+        Pose2d collect2 = new Pose2d(x_collect2, y_collect2, -angle_collect2);
+        Pose2d collect3 = new Pose2d(x_collect3, y_collect3, -angle_collect3);
 
         Pose2d score = new Pose2d(x_score, y_score, angle_score);
 
@@ -208,35 +210,55 @@ public class RedBackdrop extends LinearOpMode {
 
                     case GOING_COLLECT:
 
-//                    Actions.runBlocking(goToCollect);
-                        autoController.extendo.goToPoz(poz_extendo_collect);
-//                        Actions.runBlocking(drive.actionBuilder(drive.pose).turnTo(180).build());
-//                        autoController.wait(300);
-//                        Thread.currentThread().notifyAll();
-//                        autoController.wait();
-                        autoController.intake.takePixelAuto(autoController.lastPixel);
-
                         switch(noOfCycle)
                         {
                             case CYCLE_1:
-                                Actions.runBlocking(drive.actionBuilder(drive.pose)
-                                        .strafeToConstantHeading(collect.position)
+//                                Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.pose)
+//                                        .strafeToLinearHeading(collect.position, collect.heading)
+//                                        .build(), new InstantAction(() -> {
+//                                    autoController.extendo.goToPoz(poz_extendo_collect);
+//                                    autoController.intake.takePixelAuto(autoController.lastPixel);
+//                                })));
+//                                noOfCycle = CYCLE_NO.CYCLE_2;
+                                Actions.runBlocking(drive.actionBuilder(safe).lineToX(collect.position.x)
                                         .build());
-                                noOfCycle = CYCLE_NO.CYCLE_2;
+                                autoController.extendo.goToPoz(poz_extendo_collect);
+                                autoController.takeNextPixel();
+                                sleep(2000);
+                                noOfCycle = CYCLE_NO.PARK;
                                 break;
                             case CYCLE_2:
-                                autoController.lastPixel = Intake4Bar.POSE.pixel3;
-                                autoController.intake.takePixelAuto(autoController.lastPixel);
+//                                autoController.lastPixel = Intake4Bar.POSE.pixel3;
+//                                autoController.intake.takePixelAuto(autoController.lastPixel);
 
-                                Actions.runBlocking(drive.actionBuilder(drive.pose)
-                                        .strafeToConstantHeading(collect2.position)
+//                                Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.pose)
+//                                        .strafeToLinearHeading(collect.position, collect.heading)
+//                                        .build(), new InstantAction(() -> {
+//                                    autoController.extendo.goToPoz(poz_extendo_collect);
+//                                    autoController.lastPixel = Intake4Bar.POSE.pixel3;
+//                                    autoController.intake.takePixelAuto(autoController.lastPixel);
+//                                })));
+                                autoController.extendo.goToPoz(poz_extendo_collect);
+                                    autoController.lastPixel = Intake4Bar.POSE.pixel3;
+                                    autoController.intake.takePixelAuto(autoController.lastPixel);
+                                Actions.runBlocking(drive.actionBuilder(safe).lineToX(collect2.position.x)
                                         .build());
-                                noOfCycle = CYCLE_NO.CYCLE_3;
+                                noOfCycle = CYCLE_NO.PARK;
                                 break;
                             case CYCLE_3:
-                                Actions.runBlocking(drive.actionBuilder(drive.pose)
-                                        .strafeToConstantHeading(collect3.position)
+//                                Actions.runBlocking(new ParallelAction(drive.actionBuilder(drive.pose)
+//                                        .strafeToLinearHeading(collect.position, collect.heading)
+//                                        .build(), new InstantAction(() -> {
+//                                    autoController.extendo.goToPoz(poz_extendo_collect);
+//                                    autoController.lastPixel = Intake4Bar.POSE.pixel1;
+//                                    autoController.intake.takePixelAuto(autoController.lastPixel);
+//                                })));
+                                autoController.extendo.goToPoz(poz_extendo_collect);
+                                    autoController.lastPixel = Intake4Bar.POSE.pixel1;
+                                    autoController.intake.takePixelAuto(autoController.lastPixel);
+                                Actions.runBlocking(drive.actionBuilder(safe).lineToX(collect3.position.x)
                                         .build());
+
                                 noOfCycle = CYCLE_NO.PARK;
 
                         }

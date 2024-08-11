@@ -20,10 +20,12 @@ public class ExtendoControllerPID {
     public static double magicPOWER = -0.3;
     public int position;
     public static int MAX_POS = 1400;
-    public static int TRANSFER_POZ = -50;
-    public static int MID_POS = 1000;
+    public static int MAX_POS_TELEOP = 1300;
+    public static int TRANSFER_POZ = -10;
+    public static int MID_POS = 700;
 
     public static int DRIVE_POS = 0;
+    public static int OUTTAKE_ESCAPE = 10;
     public boolean pidON = true;
 
     public enum States {
@@ -146,7 +148,14 @@ public class ExtendoControllerPID {
     public void goToMid () {
         goToPoz(MID_POS);
     }
+    public void goToMaxPosTeleop(){
+        goToPoz(MAX_POS_TELEOP);
+    }
     public void goToDrive () {
         goToPoz(DRIVE_POS);
+    }
+
+    public void goToOuttakeEscape(){
+        goToPoz(OUTTAKE_ESCAPE);
     }
 }
