@@ -16,7 +16,7 @@ public class ExtendoControllerPID {
     DcMotorEx left;
     //double kp = 0.02, kd = 0.01, ki = 0.002;
     public static double kp = 0.03, kd = 0.04, ki = 0;
-    PIDController pidController = new PIDController(kp, kd, ki);
+    public PIDController pidController = new PIDController(kp, kd, ki);
     public static double magicPOWER = -0.3;
     public int position;
     public static int MAX_POS = 1400;

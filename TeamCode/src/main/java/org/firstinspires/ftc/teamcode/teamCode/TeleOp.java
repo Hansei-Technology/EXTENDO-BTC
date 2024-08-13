@@ -27,6 +27,7 @@ public class TeleOp extends LinearOpMode {
     OuttakeSubsystem outtake;
     ExtendoControllerPID extendo;
     DroneController drone;
+
     MecanumDrive drive;
     StickyGamepad sg1, sg2;
     ElapsedTime transferTimer;
@@ -48,9 +49,11 @@ public class TeleOp extends LinearOpMode {
     TransferState previousState = TransferState.NO_TRANSFER;
 
     public static int time_for_latch = 1000;
-    public static int time_outtake_down = 1300;
-    public static int time_for_claw = 800;
-    public static int time_outtake_up = 600;
+    public static int time_outtake_down = 900;
+    public static int time_for_claw = 250;
+    public static int time_outtake_up = 350;
+
+    public static int levelIncrement = 100;
     public boolean isArragingPixels = false;
 
     @Override
@@ -69,6 +72,8 @@ public class TeleOp extends LinearOpMode {
         transferTimer = new ElapsedTime();
 
         outtake.goToMoving();
+        lift.goToPoz(-50);
+        lift.ResetEncoders();
         //extendo.goDown();
         //lift.goDown();
         intake.closeLatch();
@@ -88,7 +93,12 @@ public class TeleOp extends LinearOpMode {
                 outtake.goToMoving();
             }
             if (gamepad1.b)  {
-                lift.goToLow();
+                lift.goToMid();
+                outtake.goToPlace();
+            }
+
+            if(gamepad1.y) {
+                lift.goToHigh();
                 outtake.goToPlace();
             }
 
@@ -96,8 +106,23 @@ public class TeleOp extends LinearOpMode {
                 outtake.goToFirstLines();
             }
 
-            if (gamepad1.right_stick_y > 0.8) outtake.rotation.goRight();
-            else if (gamepad1.right_stick_y < -0.8) outtake.rotation.goLeft();
+            if(gamepad1.dpad_up) {
+                lift.goToPoz(lift.position + levelIncrement);
+            }
+
+            if(gamepad1.dpad_down) {
+                lift.goToPoz(lift.position - levelIncrement);
+            }
+
+
+            if (gamepad1.right_stick_y > 0.9) {
+                outtake.rotation.goRight();
+                gamepad1.right_stick_x = 0;
+            }
+            else if (gamepad1.right_stick_y < -0.9) {
+                outtake.rotation.goLeft();
+                gamepad1.right_stick_x = 0;
+            }
             else if (!isArragingPixels) outtake.rotation.goToLevel();
 
             if(gamepad1.right_trigger - gamepad1.left_trigger >0.2 || gamepad1.right_trigger - gamepad1.left_trigger < -0.2)

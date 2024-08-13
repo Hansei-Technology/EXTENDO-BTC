@@ -88,13 +88,10 @@ public class IntakeSubsystem {
     }
 
     public void takePixelCycle1(){
-        timerluca.reset();
         intake4Bar.goTo(Intake4Bar.POSE.pixel5);
         intakeController.turnOn();
-        if(timerluca.milliseconds()>400){
-            intake4Bar.goTo(Intake4Bar.POSE.pixel4);
-            currentState = State.AUTO_ON;
-        }
+        intake4Bar.goTo(Intake4Bar.POSE.pixel4);
+        currentState = State.AUTO_ON;
     }
 
     public void stop() {
@@ -118,12 +115,13 @@ public class IntakeSubsystem {
     }
 
 
-    public void update(Gamepad gamepad) {
+    public void update(Gamepad gamepad1, Gamepad gamepad2) {
         switch (currentState) {
             case ON:
                 closeLatch();
                 if(pololuSensor.detect() == 2) {
-                    gamepad.runRumbleEffect(effectCollect);
+                    gamepad1.runRumbleEffect(effectCollect);
+                    gamepad2.runRumbleEffect(effectCollect);
                     currentState = State.GOT_PIXELS_WAITING;
                     timer.reset();
                 }
@@ -156,7 +154,7 @@ public class IntakeSubsystem {
             case AUTO_ON:
                 closeLatch();
                 if(pololuSensor.detect() == 2) {
-                    currentState = State.GOT_PIXELS_WAITING;
+                    currentState = State.AUTO_GOT_PIXELS_WAITING;
                     timer.reset();
                 }
                 break;

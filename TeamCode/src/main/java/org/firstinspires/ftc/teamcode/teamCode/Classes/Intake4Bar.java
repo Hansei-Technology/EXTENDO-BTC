@@ -9,7 +9,7 @@ public class Intake4Bar {
     Servo servo;
 
     public static double poz1 = 0.785;
-    public static double poz2 = 0.768;
+    public static double poz2 = 0.77;
     public static double poz3 = 0.75;
     public static double poz4 = 0.74;
     public static double poz5 = 0.72;

@@ -21,8 +21,9 @@ public class LiftController {
     public static double magicPOWER = -0.3;
     public int position;
     public static int MAX_POS = 2400;
+    public static int HIGH_POS = 2100;
     public static int LOW_POS = 800;
-    public static int MID_POS = 1700;
+    public static int MID_POS = 1200;
     public boolean pidON = true;
 
     public enum States {
@@ -151,6 +152,10 @@ public class LiftController {
 
     public void goToLow () {
         goToPoz(LOW_POS);
+    }
+
+    public void goToHigh(){
+        goToPoz(HIGH_POS);
     }
 
     public void setRawPower(double power){

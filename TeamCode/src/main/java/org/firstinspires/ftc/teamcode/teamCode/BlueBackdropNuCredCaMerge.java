@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode.teamCode;
 
 
-
-import static org.firstinspires.ftc.teamcode.teamCode.Classes.IntakeSubsystem.State.AUTO_FULL;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -16,22 +14,17 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.Intake4Bar;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.RedFarDetectionPipeline;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-
 
 import java.util.List;
 
 @Config
 @Autonomous
 
-public class RedBackdrop extends LinearOpMode {
+public class BlueBackdropNuCredCaMerge extends LinearOpMode {
     AutoController autoController;
     public static int time_preloads = 800;
     public static int time_preloads2 = 1000;
@@ -77,10 +70,10 @@ public class RedBackdrop extends LinearOpMode {
 
     State CS = State.NOTHING, PS = State.NOTHING; //currentState/previousState
 
-    public static double x_start = 15.5, y_start = -64, angle_start = -90;
-    public static double x_purple_preload_right = 51, y_purple_preload_right = -38.3, angle_purple_preload_right = 165;
-    public static double x_purple_preload_center = 51, y_purple_preload_center = -31.5, angle_purple_preload_center = 165;
-    public static double x_purple_preload_left = 51, y_purple_preload_left = -28, angle_purple_preload_left = 180;
+    public static double x_start = 15.5, y_start = 64, angle_start = 90;
+    public static double x_purple_preload_right = 52, y_purple_preload_right = -38, angle_purple_preload_right = 171;
+    public static double x_purple_preload_center = 52, y_purple_preload_center = -31.5, angle_purple_preload_center = 165;
+    public static double x_purple_preload_left = 52, y_purple_preload_left = -28, angle_purple_preload_left = 180;
 
     public static double x_yellow_preload_right = 41, y_yellow_preload_right = -49, angle_yellow_preload_right = 182;
     public static double x_yellow_preload_center = 41, y_yellow_preload_center = -29, angle_yellow_preload_center = 180;
@@ -89,15 +82,15 @@ public class RedBackdrop extends LinearOpMode {
     public static double x_collect = -27, y_collect = -7.8, angle_collect = 180;
     public static double x_collect2 = -26.5, y_collect2 = -7.8, angle_collect2 = 180;
     public static double x_collect3 = -27, y_collect3 = -7.8, angle_collect3 = 180;
-    public static double x_score = 51, y_score = -24.5, angle_score = 210;
+    public static double x_score = 52, y_score = -24.5, angle_score = 210;
 
-    public static double x_safe = 22, y_safe = -7.8, angle_safe = 181;
-    public static double x_safe2 = 22, y_safe2 = -7.4, angle_safe2 = 180;
+    public static double x_safe = 20, y_safe = -12, angle_safe = 177;
+    public static double x_safe2 = 20, y_safe2 = -13, angle_safe2 = 180;
     public static int poz_extendo_preloads_left = 1220;
     public static int poz_extendo_preloads_center = 900;
-    public static int poz_extendo_preloads_right = 500;
+    public static int poz_extendo_preloads_right = 400;
 
-    public static int poz_extendo_collect = 1340;
+    public static int poz_extendo_collect = 1330;
     public static int poz_extendo_reverse_intake = 1300;
     public boolean exitLoop = false;
     public RedFarDetectionPipeline redFarDetectionPipeline;
@@ -111,24 +104,25 @@ public class RedBackdrop extends LinearOpMode {
         time_left_of_auto = new ElapsedTime();
         timer_collect = new ElapsedTime();
         autoController = new AutoController(hardwareMap);
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()
-        );
-        OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class,"Webcam 1"), cameraMonitorViewId);
-        redFarDetectionPipeline = new RedFarDetectionPipeline(telemetry, false);
-        camera.setPipeline(redFarDetectionPipeline);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened(){
-                camera.startStreaming(960, 720, OpenCvCameraRotation.SENSOR_NATIVE);
-            }
-            @Override
-            public void onError(int errorCode){
-                //Teapa coae
-            }
-        });
-        FtcDashboard.getInstance().startCameraStream(camera, 0);
-        location = redFarDetectionPipeline.getLocation();
+//        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+//                "cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()
+//        );
+//        OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class,"Webcam 1"), cameraMonitorViewId);
+//        redFarDetectionPipeline = new RedFarDetectionPipeline(telemetry, false);
+//        camera.setPipeline(redFarDetectionPipeline);
+//        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+//            @Override
+//            public void onOpened(){
+//                camera.startStreaming(960, 720, OpenCvCameraRotation.SENSOR_NATIVE);
+//            }
+//            @Override
+//            public void onError(int errorCode){
+//                //Teapa coae
+//            }
+//        });
+//        FtcDashboard.getInstance().startCameraStream(camera, 0);
+//        location = redFarDetectionPipeline.getLocation();
+        location = RedFarDetectionPipeline.Location.RIGHT;
         double voltage;
         VoltageSensor batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         voltage = batteryVoltageSensor.getVoltage();
@@ -161,15 +155,15 @@ public class RedBackdrop extends LinearOpMode {
 
 
         Action goToPreloadsLeft = drive.actionBuilder(start_pose)
-                .strafeToLinearHeading(purpleLeft.position, purpleLeft.heading)
+                .strafeToLinearHeading(new Vector2d(purpleLeft.position.x, -purpleLeft.position.y), purpleLeft.heading.inverse())
                 .build();
 
         Action goToPreloadsCenter = drive.actionBuilder(start_pose)
-                        .strafeToLinearHeading(purpleCenter.position, purpleCenter.heading)
+                        .strafeToLinearHeading(new Vector2d(purpleCenter.position.x, -purpleLeft.position.y), purpleCenter.heading.inverse())
                                 .build();
 
         Action goToPreloadsRight = drive.actionBuilder(start_pose)
-                        .strafeToLinearHeading(purpleRight.position, purpleRight.heading)
+                        .strafeToLinearHeading(new Vector2d(purpleRight.position.x, -purpleRight.position.y), purpleRight.heading.inverse())
                                 .build();
 
 
@@ -248,13 +242,13 @@ public class RedBackdrop extends LinearOpMode {
                         if(noOfCycle == CYCLE_NO.CYCLE_1) {
                             Actions.runBlocking(
                                     drive.actionBuilder(drive.pose)
-                                            .strafeToLinearHeading(safe.position, safe.heading)
+                                            .strafeToLinearHeading(new Vector2d(safe.position.x, -safe.position.y), safe.heading.inverse())
                                             .build()
                             );
                         } else {
                             Actions.runBlocking(
                                     drive.actionBuilder(drive.pose)
-                                            .strafeToLinearHeading(safe2.position, safe2.heading)
+                                            .strafeToLinearHeading(new Vector2d(safe2.position.x, -safe2.position.y), safe2.heading.inverse())
                                             .build()
                             );
                         }
@@ -282,15 +276,16 @@ public class RedBackdrop extends LinearOpMode {
 //                                    autoController.intake.takePixelAuto(autoController.lastPixel);
 //                                })));
 //                                noOfCycle = CYCLE_NO.CYCLE_2;
-                                Actions.runBlocking(drive.actionBuilder(safe).lineToX(collect.position.x)
+                                Actions.runBlocking(drive.actionBuilder(drive.pose).lineToX(collect.position.x)
                                         .build());
                                 autoController.extendo.goToPoz(poz_extendo_collect);
                                 autoController.intake.intake4Bar.goTo(Intake4Bar.POSE.pixel5);
                                 autoController.lastPixel = Intake4Bar.POSE.pixel5;
                                 autoController.intake.takePixelAuto(autoController.lastPixel);
+                                sleep(150);
                                 break;
                             case CYCLE_2:
-                                Actions.runBlocking(drive.actionBuilder(safe).lineToX(collect2.position.x)
+                                Actions.runBlocking(drive.actionBuilder(drive.pose).lineToX(collect2.position.x)
                                         .build());
                                 autoController.extendo.goToPoz(poz_extendo_collect);
                                 autoController.intake.intake4Bar.goTo(Intake4Bar.POSE.pixel3);
@@ -350,9 +345,9 @@ public class RedBackdrop extends LinearOpMode {
 //|| timer_collect.milliseconds() < time_at_stack
                         //autoController.intake.pololuSensor.detect() == 2 || autoController.lastPixel == Intake4Bar.POSE.pixel0 ||
                         if(timer.milliseconds() > time_at_stack) {
-                            autoController.extendo.goToPoz(poz_extendo_collect-100);
-                            autoController.intake.intakeController.reverse();
-                            sleep(100);
+                            autoController.extendo.goToPoz(poz_extendo_collect);
+//                            autoController.intake.intakeController.reverse();
+//                            sleep(150);
                             autoController.intake.currentState = IntakeSubsystem.State.AUTO_OFF;
                             autoController.intake.intakeController.turnOn();
                             sleep(150);
@@ -378,10 +373,12 @@ public class RedBackdrop extends LinearOpMode {
                     case GOING_SAFE_SCORE:
 
                         autoController.extendo.goDown();
+                        autoController.intake.intakeController.reverse();
+                        sleep(100);
                         //autoController.intake.turnOff();
                             Actions.runBlocking(
                                     drive.actionBuilder(drive.pose)
-                                            .strafeToLinearHeading(safe.position, safe.heading)
+                                            .strafeToLinearHeading(new Vector2d(safe.position.x, -safe.position.y), safe.heading.inverse())
                                             .build()
                             );
 
@@ -412,8 +409,8 @@ public class RedBackdrop extends LinearOpMode {
                         autoController.lift.goToPoz(650);
                         autoController.extendo.goToDrive();
 
-                        Actions.runBlocking(drive.actionBuilder(safe)
-                                .strafeToLinearHeading(score.position, score.heading)
+                        Actions.runBlocking(drive.actionBuilder(new Pose2d(safe.position.x, -safe.position.y, safe.heading.inverse().toDouble()))
+                                .strafeToLinearHeading(new Vector2d(score.position.x, -score.position.y), score.heading.inverse())
                                 .build());
 
                         CS = State.SCORE;

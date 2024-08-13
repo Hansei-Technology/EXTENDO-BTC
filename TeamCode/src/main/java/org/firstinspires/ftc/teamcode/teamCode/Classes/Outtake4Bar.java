@@ -11,7 +11,7 @@ public class Outtake4Bar {
     public static double IntakePos = 0.88;
     public static double DropPos = 0.25;
     public static double ReadyPos = 0.85;
-    public static double PreloadsPos = 0.3;
+    public static double PreloadsPos = 0.275;
 
     public static double firstLinesPos = 0.4;
 
