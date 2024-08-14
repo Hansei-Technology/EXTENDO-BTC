@@ -199,7 +199,7 @@ public class TeleOp extends LinearOpMode {
             transferUpdate();
             drive.robotCentric(gamepad1);
             lift.update();
-            intake.update(gamepad1);
+            intake.update(gamepad1,gamepad2);
             extendo.update();
             drone.update();
             sg1.update();
