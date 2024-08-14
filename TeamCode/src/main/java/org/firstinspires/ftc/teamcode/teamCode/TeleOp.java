@@ -71,13 +71,16 @@ public class TeleOp extends LinearOpMode {
         sg2 = new StickyGamepad(gamepad2, this);
         transferTimer = new ElapsedTime();
 
-        outtake.goToMoving();
+        while(opModeInInit()){
+            outtake.goToMoving();
         lift.goToPoz(-50);
         lift.ResetEncoders();
         //extendo.goDown();
         //lift.goDown();
         intake.closeLatch();
         intake.intake4Bar.goTo(Intake4Bar.POSE.moving);
+        }
+        
 
         waitForStart();
 
@@ -133,7 +136,11 @@ public class TeleOp extends LinearOpMode {
                 outtake.goToArrange(lift.position);
             }
 
-            if(gamepad1.dpad_left) drone.CS = DroneController.droneStatus.RELEASED;
+            if(gamepad1.dpad_left) {
+                intake.intake4Bar.goTo(Intake4Bar.POSE.moving);
+                extendo.goDown();
+                lift.goDown();
+            }
 
             //controller 2
             if (gamepad2.dpad_down) intake.takePixel(Intake4Bar.POSE.pixel1);
@@ -141,6 +148,7 @@ public class TeleOp extends LinearOpMode {
             if (gamepad2.a) extendo.goToDrive();
             if (gamepad2.b) extendo.goToMid();
             if(gamepad2.y) extendo.goToMaxPosTeleop();
+            if(gamepad2.x) drone.CS = DroneController.droneStatus.RELEASED;
 
             if(gamepad2.dpad_up) {
                 currentState = TransferState.SLIDES_RETRACTING;
