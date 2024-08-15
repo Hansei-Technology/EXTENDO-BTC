@@ -23,11 +23,11 @@ public class RedFarDetectionPipeline extends OpenCvPipeline {
     private Location location = Location.LEFT;
     public boolean isBlue = false;
 
-    public static int rightRectTopX = 535 , rightRectTopY = 330;
-    public static int rightRectBottomX = 650 , rightRectBottomY = 420;
+    public static int rightRectTopX = 550 , rightRectTopY = 345;
+    public static int rightRectBottomX = 635 , rightRectBottomY = 420;
 
-    public static int middleRectTopX = 475 ,middleRectTopY = 330;
-    public static int middleRectBottomX = 370 ,middleRectBottomY = 420;
+    public static int middleRectTopX = 460 ,middleRectTopY = 350;
+    public static int middleRectBottomX = 395 ,middleRectBottomY = 410;
 
     public static int lowH = 100 ,lowS = 40, lowV = 30;
     public static int highH = 140, highS = 255, highV = 255;
@@ -67,16 +67,18 @@ public class RedFarDetectionPipeline extends OpenCvPipeline {
         boolean tseMiddle = middleValue > tseThreshold;
 
         if(tseRight) {
-            location = Location.MIDDLE;
-            telemetry.addData("pixel_location: ", "middle");
+            if(isBlue) location = Location.LEFT;
+            else location = Location.RIGHT;
+//            telemetry.addData("pixel_location: ", "middle");
         }
         else if(tseMiddle){
-            location = Location.LEFT;
-            telemetry.addData("pixel_location: ", "left");
+            location = Location.MIDDLE;
+//            telemetry.addData("pixel_location: ", "left");
         }
         else{
-            location = Location.RIGHT;
-            telemetry.addData("pixel_location: ", "right");
+            if(isBlue) location = Location.RIGHT;
+            else location = Location.LEFT;
+//            telemetry.addData("pixel_location: ", "right");
         }
         telemetry.update();
         Imgproc.cvtColor(mat,mat,Imgproc.COLOR_GRAY2RGB);

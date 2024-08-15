@@ -186,7 +186,7 @@ public class RedBackdrop extends LinearOpMode {
             //DETECTION
             drive.lazyImu.get().resetYaw();
 
-            telemetry.addData("case", "");
+            telemetry.addData("case", redFarDetectionPipeline.getLocation().toString());
             telemetry.update();
             sleep(50);
         }

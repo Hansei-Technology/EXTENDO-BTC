@@ -103,7 +103,7 @@ public class BlueBackdropPoateMerge extends LinearOpMode {
     public static int poz_extendo_collect2 = 1250;
     public static int poz_extendo_reverse_intake = 1300;
     public boolean exitLoop = false;
-    public String location = "center";
+    public RedFarDetectionPipeline.Location location;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -117,13 +117,12 @@ public class BlueBackdropPoateMerge extends LinearOpMode {
                 "cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()
         );
         OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class,"Webcam 1"), cameraMonitorViewId);
-        blueOpenCVPipeline = new BlueOpenCVPipeline();
+        RedFarDetectionPipeline blueOpenCVPipeline = new RedFarDetectionPipeline(telemetry, true);
         camera.setPipeline(blueOpenCVPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened(){
                 camera.startStreaming(960, 720, OpenCvCameraRotation.SENSOR_NATIVE);
-                while (!blueOpenCVPipeline.hasProcessedFrame) sleep(50);
 
             }
             @Override
@@ -185,11 +184,11 @@ public class BlueBackdropPoateMerge extends LinearOpMode {
         while (opModeInInit()) {
 
             sleep(20);
-            location = blueOpenCVPipeline.getWhichSide();
+            location = blueOpenCVPipeline.getLocation();
             //DETECTION
             drive.lazyImu.get().resetYaw();
 
-            telemetry.addData("case", "");
+            telemetry.addData("case", location.toString());
             telemetry.update();
             sleep(50);
         }
@@ -206,13 +205,13 @@ public class BlueBackdropPoateMerge extends LinearOpMode {
 
                         autoController.outtake.goToPreloads();
                         switch(location) {
-                            case "left":
+                            case LEFT:
                                 Actions.runBlocking(goToPreloadsLeft);
                                 break;
-                            case "center":
+                            case MIDDLE:
                                 Actions.runBlocking(goToPreloadsCenter);
                                 break;
-                            case "right":
+                            case RIGHT:
                                 Actions.runBlocking(goToPreloadsRight);
                                 break;
                         }
@@ -224,13 +223,13 @@ public class BlueBackdropPoateMerge extends LinearOpMode {
                     case PRELOADS:
                         switch(location)
                         {
-                            case "left":
+                            case LEFT:
                                 autoController.extendo.goToPoz(poz_extendo_preloads_left);
                                 break;
-                            case "center":
+                            case MIDDLE:
                                 autoController.extendo.goToPoz(poz_extendo_preloads_center);
                                 break;
-                            case "right":
+                            case RIGHT:
                                 autoController.extendo.goToPoz(poz_extendo_preloads_right);
                                 break;
                         }
