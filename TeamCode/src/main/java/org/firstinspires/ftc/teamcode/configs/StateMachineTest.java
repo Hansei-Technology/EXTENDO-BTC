@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.configs;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -7,6 +8,7 @@ import com.sfdev.assembly.state.*;
 
 // @Autonomous or @TeleOp
 @TeleOp(group = "Teste")
+@Disabled
 public class StateMachineTest extends LinearOpMode {
     ElapsedTime timer;
     enum States {

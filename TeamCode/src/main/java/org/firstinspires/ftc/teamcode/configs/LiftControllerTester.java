@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.configs;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.teamCode.Classes.LiftController;
 
 @TeleOp
+@Disabled
 public class LiftControllerTester extends LinearOpMode {
     LiftController lift;
     @Override

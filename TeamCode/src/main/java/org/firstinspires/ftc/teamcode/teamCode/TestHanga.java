@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teamCode;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -8,6 +9,7 @@ import org.firstinspires.ftc.teamcode.teamCode.Classes.LiftController;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.Outtake4Bar;
 
 @TeleOp
+@Disabled
 public class TestHanga extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

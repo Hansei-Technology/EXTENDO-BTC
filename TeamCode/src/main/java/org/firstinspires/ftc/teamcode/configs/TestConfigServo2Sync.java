@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.configs;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(group = "Teste")
 @Config
+@Disabled
 public class TestConfigServo2Sync extends LinearOpMode {
     Servo servo1, servo2;
     public static double poz = 0;

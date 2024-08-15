@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.configs;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.teamCode.Classes.OuttakeSubsystem;
 
 @TeleOp(group = "Teste")
+@Disabled
 public class OuttakeSubsystemTester extends LinearOpMode {
     OuttakeSubsystem outtake;
     @Override

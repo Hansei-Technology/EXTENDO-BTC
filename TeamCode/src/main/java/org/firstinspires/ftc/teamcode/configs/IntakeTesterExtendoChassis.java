@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.configs;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
@@ -8,7 +9,7 @@ import org.firstinspires.ftc.teamcode.teamCode.Classes.ExtendoControllerPID;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.Intake4Bar;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.IntakeController;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.Storage;
-
+@Disabled
 public class IntakeTesterExtendoChassis extends LinearOpMode {
     Intake4Bar intake4Bar;
     IntakeController intakeController;

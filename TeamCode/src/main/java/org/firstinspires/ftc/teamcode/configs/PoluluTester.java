@@ -4,12 +4,14 @@ import android.graphics.LinearGradient;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.teamCode.Classes.PololuSensor;
 
 @TeleOp(group = "Teste")
+@Disabled
 public class PoluluTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

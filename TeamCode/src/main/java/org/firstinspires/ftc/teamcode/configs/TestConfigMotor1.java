@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.configs;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 @TeleOp(group = "Teste")
 @Config
+@Disabled
 public class TestConfigMotor1 extends LinearOpMode {
     DcMotorEx motor;
     public static double speed = 0;
