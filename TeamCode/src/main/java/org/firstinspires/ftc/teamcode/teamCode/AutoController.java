@@ -50,7 +50,7 @@ public class AutoController extends Thread{
 
     public static int time_to_ready_outtake = 300;
     public static int time_outtake_down = 350;
-    public static int time_for_claw = 300;
+    public static int time_for_claw = 350;
     public static int time_outtake_up = 350;
     public static int time_for_latch = 450;
     
@@ -241,7 +241,7 @@ public class AutoController extends Thread{
                 if(transferTimer.milliseconds() > time_for_claw) {
                     currentState = WAITING_FOR_OUTTAKE_UP;
                     extendo.goToOuttakeEscape();
-                    outtake.goToMoving();
+                    outtake.goToPlace();
                     transferTimer.reset();
                 }
                 break;

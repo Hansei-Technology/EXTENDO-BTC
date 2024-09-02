@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -48,8 +49,8 @@ public class TeleOp extends LinearOpMode {
     TransferState currentState = TransferState.NO_TRANSFER;
     TransferState previousState = TransferState.NO_TRANSFER;
 
-    public static int time_for_latch = 1000;
-    public static int time_outtake_down = 900;
+    public static int time_for_latch = 600;
+    public static int time_outtake_down = 350;
     public static int time_for_claw = 250;
     public static int time_outtake_up = 350;
 
@@ -70,19 +71,44 @@ public class TeleOp extends LinearOpMode {
         sg1 = new StickyGamepad(gamepad1, this);
         sg2 = new StickyGamepad(gamepad2, this);
         transferTimer = new ElapsedTime();
-
+        boolean reset = false;
+        ElapsedTime time = new ElapsedTime();
         while(opModeInInit()){
             outtake.goToMoving();
-        lift.goToPoz(-50);
-        lift.ResetEncoders();
-        //extendo.goDown();
-        //lift.goDown();
-        intake.closeLatch();
-        intake.intake4Bar.goTo(Intake4Bar.POSE.moving);
-        }
-        
 
-        waitForStart();
+            intake.closeLatch();
+            intake.intake4Bar.goTo(Intake4Bar.POSE.moving);
+
+
+
+            if(gamepad1.a) {
+                lift.left.setPower(-0.4);
+                lift.right.setPower(-0.4);
+                lift.pidON = false;
+
+            } else {
+                lift.left.setPower(0);
+                lift.right.setPower(0);
+            }
+
+            if(gamepad1.b) {
+                extendo.left.setPower(-0.7);
+            } else {
+                extendo.left.setPower(0);
+            }
+
+        }
+
+        lift.left.setPower(0);
+        lift.right.setPower(0);
+        extendo.left.setPower(0);
+
+
+        lift.ResetEncoders();
+        lift.pidON = true;
+        extendo.left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        extendo.left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //waitForStart();
 
         while (opModeIsActive()) {
 
@@ -119,11 +145,17 @@ public class TeleOp extends LinearOpMode {
 
 
             if (gamepad1.right_stick_y > 0.9) {
-                outtake.rotation.goRight();
+                if(gamepad1.touchpad)
+                    outtake.rotation.goRightVertical();
+                else
+                    outtake.rotation.goRight();
                 gamepad1.right_stick_x = 0;
             }
             else if (gamepad1.right_stick_y < -0.9) {
-                outtake.rotation.goLeft();
+                if(gamepad1.touchpad)
+                    outtake.rotation.goLeftVertical();
+                else
+                    outtake.rotation.goLeft();
                 gamepad1.right_stick_x = 0;
             }
             else if (!isArragingPixels) outtake.rotation.goToLevel();
@@ -165,7 +197,6 @@ public class TeleOp extends LinearOpMode {
 
             if (gamepad2.dpad_left) intake.intakeController.turnOff();
 
-
             //pozitii stack
             if (Math.abs(gamepad2.left_stick_y) > Math.abs(gamepad2.left_stick_x))
             {
@@ -204,6 +235,8 @@ public class TeleOp extends LinearOpMode {
             drone.update();
             sg1.update();
             sg2.update();
+
+            telemetry.addData("buton", gamepad1.touchpad);
 
             telemetry.addData("extendo", extendo.currentState);
             telemetry.addData("lift", lift.currentState);

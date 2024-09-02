@@ -16,10 +16,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
-import org.firstinspires.ftc.teamcode.teamCode.Classes.BlueOpenCVPipeline;
+import org.firstinspires.ftc.teamcode.teamCode.Classes.BlueDetectionPipeline;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.Intake4Bar;
 import org.firstinspires.ftc.teamcode.teamCode.Classes.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.teamCode.Classes.RedFarDetectionPipeline;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -29,7 +28,7 @@ import java.util.List;
 @Config
 @Autonomous
 
-public class BlueBackdropPoateMerge extends LinearOpMode {
+public class BlueBackdrop extends LinearOpMode {
     AutoController autoController;
     public static int time_preloads = 800;
     public static int time_preloads2 = 1000;
@@ -47,7 +46,6 @@ public class BlueBackdropPoateMerge extends LinearOpMode {
     public static int time_at_stack = 2000;
     public static int time_to_collect = 1000;
     public static int pixel_count=5;
-    public BlueOpenCVPipeline blueOpenCVPipeline;
 
     ElapsedTime timer;
     ElapsedTime timer_collect;
@@ -80,14 +78,9 @@ public class BlueBackdropPoateMerge extends LinearOpMode {
     State CS = State.NOTHING, PS = State.NOTHING; //currentState/previousState
 
     public static double x_start = 15.5, y_start = 64, angle_start = 90;
-    public static double x_purple_preload_right = 52, y_purple_preload_right = -38, angle_purple_preload_right = 171;
-    public static double x_purple_preload_center = 52, y_purple_preload_center = -31.5, angle_purple_preload_center = 165;
+    public static double x_purple_preload_right = 52.5, y_purple_preload_right = -36, angle_purple_preload_right = 165;
+    public static double x_purple_preload_center = 53.5, y_purple_preload_center = -29, angle_purple_preload_center = 165;
     public static double x_purple_preload_left = 52, y_purple_preload_left = -28, angle_purple_preload_left = 180;
-
-    public static double x_yellow_preload_right = 41, y_yellow_preload_right = -49, angle_yellow_preload_right = 182;
-    public static double x_yellow_preload_center = 41, y_yellow_preload_center = -29, angle_yellow_preload_center = 180;
-    public static double x_yellow_preload_left = 41, y_yellow_preload_left = -25, angle_yellow_preload_left = 180;
-
     public static double x_collect = -24, y_collect = -7.8, angle_collect = 180;
     public static double x_collect2 = -27, y_collect2 = -7.8, angle_collect2 = 182;
     public static double x_collect3 = -27, y_collect3 = -7.8, angle_collect3 = 180;
@@ -95,15 +88,15 @@ public class BlueBackdropPoateMerge extends LinearOpMode {
 
     public static double x_safe = 20, y_safe = -11, angle_safe = 180;
     public static double x_safe2 = 20, y_safe2 = -14, angle_safe2 = 180;
-    public static int poz_extendo_preloads_left = 1220;
+    public static int poz_extendo_preloads_left = 1250;
     public static int poz_extendo_preloads_center = 900;
-    public static int poz_extendo_preloads_right = 400;
+    public static int poz_extendo_preloads_right = 370;
 
     public static int poz_extendo_collect = 1250;
     public static int poz_extendo_collect2 = 1250;
     public static int poz_extendo_reverse_intake = 1300;
     public boolean exitLoop = false;
-    public RedFarDetectionPipeline.Location location;
+    public BlueDetectionPipeline.Location location;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -117,7 +110,7 @@ public class BlueBackdropPoateMerge extends LinearOpMode {
                 "cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()
         );
         OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class,"Webcam 1"), cameraMonitorViewId);
-        RedFarDetectionPipeline blueOpenCVPipeline = new RedFarDetectionPipeline(telemetry, true);
+        BlueDetectionPipeline blueOpenCVPipeline = new BlueDetectionPipeline(telemetry, true);
         camera.setPipeline(blueOpenCVPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -167,7 +160,7 @@ public class BlueBackdropPoateMerge extends LinearOpMode {
                 .build();
 
         Action goToPreloadsCenter = drive.actionBuilder(start_pose)
-                .strafeToLinearHeading(new Vector2d(purpleCenter.position.x, -purpleLeft.position.y), purpleCenter.heading.inverse())
+                .strafeToLinearHeading(new Vector2d(purpleCenter.position.x, -purpleCenter.position.y), purpleCenter.heading.inverse())
                 .build();
 
         Action goToPreloadsRight = drive.actionBuilder(start_pose)
@@ -185,6 +178,7 @@ public class BlueBackdropPoateMerge extends LinearOpMode {
 
             sleep(20);
             location = blueOpenCVPipeline.getLocation();
+
             //DETECTION
             drive.lazyImu.get().resetYaw();
 
@@ -198,6 +192,8 @@ public class BlueBackdropPoateMerge extends LinearOpMode {
         CS = State.GOING_PRELOADS;
 
         time_left_of_auto.reset();
+        if(location == BlueDetectionPipeline.Location.LEFT) location = BlueDetectionPipeline.Location.RIGHT;
+        else if(location == BlueDetectionPipeline.Location.RIGHT) location = BlueDetectionPipeline.Location.LEFT;
         while (opModeIsActive() && !isStopRequested() && !exitLoop) {
             try{
                 switch (CS) {

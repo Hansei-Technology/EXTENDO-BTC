@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp
 @Config
-@Disabled
+
 public class TestConfigMotor1RUN_TO_POS extends LinearOpMode {
     DcMotorEx motor;
     public static double speed = 0;

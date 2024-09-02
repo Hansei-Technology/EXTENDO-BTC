@@ -12,7 +12,7 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 @Config
-public class BlueCloseDetectionPipeline extends OpenCvPipeline {
+public class BlueDetectionPipeline extends OpenCvPipeline {
     Mat mat = new Mat();
     Telemetry telemetry;
     public enum Location{
@@ -23,18 +23,18 @@ public class BlueCloseDetectionPipeline extends OpenCvPipeline {
     private Location location = Location.LEFT;
     public boolean isBlue = false;
 
-    public static int rightRectTopX = 330 , rightRectTopY = 100;
-    public static int rightRectBottomX = 300 , rightRectBottomY = 150;
+    public static int rightRectTopX = 550 , rightRectTopY = 345;
+    public static int rightRectBottomX = 650 , rightRectBottomY = 420;
 
-    public static int middleRectTopX = 140 ,middleRectTopY = 140;
-    public static int middleRectBottomX = 100 ,middleRectBottomY = 100;
+    public static int middleRectTopX = 485 ,middleRectTopY = 345;
+    public static int middleRectBottomX = 420 ,middleRectBottomY = 410;
 
     public static int lowH = 100 ,lowS = 40, lowV = 30;
     public static int highH = 140, highS = 255, highV = 255;
 
-    public static double tseThreshold = 0.12;
+    public static double tseThreshold = 0.4;
 
-    public BlueCloseDetectionPipeline(Telemetry telemetry, boolean b) {this.telemetry = telemetry; isBlue = b;}
+    public BlueDetectionPipeline(Telemetry telemetry, boolean b) {this.telemetry = telemetry; isBlue = b;}
 
     @Override
     public Mat processFrame(Mat input){
@@ -67,19 +67,21 @@ public class BlueCloseDetectionPipeline extends OpenCvPipeline {
         boolean tseMiddle = middleValue > tseThreshold;
 
         if(tseRight) {
-            location = Location.MIDDLE;
-            telemetry.addData("pixel_location: ", "middle");
+            if(isBlue) location = Location.RIGHT;
+            else location = Location.LEFT;
+//            telemetry.addData("pixel_location: ", "middle");
         }
         else if(tseMiddle){
-            location = Location.LEFT;
-            telemetry.addData("pixel_location: ", "left");
+            location = Location.MIDDLE;
+//            telemetry.addData("pixel_location: ", "left");
         }
         else{
-            location = Location.RIGHT;
-            telemetry.addData("pixel_location: ", "right");
+            if(isBlue) location = Location.LEFT;
+            else location = Location.RIGHT;
+//            telemetry.addData("pixel_location: ", "right");
         }
         telemetry.update();
-        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_GRAY2RGB);
+        Imgproc.cvtColor(mat,mat,Imgproc.COLOR_GRAY2RGB);
 
         Scalar colorFound = new Scalar(255,0,0);
         Scalar colorNotFound = new Scalar(0,255,0);
@@ -91,6 +93,8 @@ public class BlueCloseDetectionPipeline extends OpenCvPipeline {
 
     }
     public Location getLocation(){
+//        if(location == Location.LEFT) location = Location.RIGHT;
+//        else if(location == Location.RIGHT) location = Location.LEFT;
         return location;
     }
     public void release(){

@@ -93,6 +93,8 @@ public class RedFarDetectionPipeline extends OpenCvPipeline {
 
     }
     public Location getLocation(){
+//        if(location == Location.LEFT) location = Location.RIGHT;
+//        else if(location == Location.RIGHT) location = Location.LEFT;
         return location;
     }
     public void release(){

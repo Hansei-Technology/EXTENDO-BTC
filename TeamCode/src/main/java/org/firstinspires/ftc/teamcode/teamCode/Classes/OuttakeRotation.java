@@ -9,7 +9,9 @@ public class OuttakeRotation {
     public Servo servo;
     public static double Servo_Level = 0.585;
     public static double Servo_Left = 0.75;
+    public static double Left_Vertical = 0.85;
     public static double Servo_Right = 0.4;
+    public static double Right_Vertical = 0.3;
 
     public static double Servo_left_90_deg = 0.87;
 
@@ -32,6 +34,10 @@ public class OuttakeRotation {
     {
         servo.setPosition(Servo_Left);
     }
+    public void goLeftVertical()
+    {
+        servo.setPosition(Left_Vertical);
+    }
 
     public void go90Deg()
     {
@@ -41,5 +47,9 @@ public class OuttakeRotation {
     public void goRight()
     {
         servo.setPosition(Servo_Right);
+    }
+    public void goRightVertical()
+    {
+        servo.setPosition(Right_Vertical);
     }
 }

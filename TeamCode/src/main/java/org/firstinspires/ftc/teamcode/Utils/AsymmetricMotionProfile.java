@@ -56,9 +56,12 @@ public class AsymmetricMotionProfile {
 
     private double getVelocity(int phase, double time){
         switch (phase){
-            case 1: return v0+time*acceleration;
-            case 2: return getVelocity(1, t1);
-            case 3: return maxReachedVelocity - deceleration * (time - t1 - t2);
+            case 1:
+                return v0 + time * acceleration;
+            case 2:
+                return getVelocity(1, t1);
+            case 3:
+                return maxReachedVelocity - deceleration * (time - t1 - t2);
         }
         return 0;
     }

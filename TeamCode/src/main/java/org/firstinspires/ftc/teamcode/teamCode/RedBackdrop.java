@@ -44,6 +44,7 @@ public class RedBackdrop extends LinearOpMode {
     public static int time_place = 250;
     public static int time_place2 = 500;
     public static int time_at_stack = 2000;
+    public static int time_sleeping_safe = 1000;
     public static int time_to_collect = 1000;
     public static int pixel_count=5;
 
@@ -78,13 +79,13 @@ public class RedBackdrop extends LinearOpMode {
     State CS = State.NOTHING, PS = State.NOTHING; //currentState/previousState
 
     public static double x_start = 15.5, y_start = -64, angle_start = -90;
-    public static double x_purple_preload_right = 51, y_purple_preload_right = -38.3, angle_purple_preload_right = 165;
-    public static double x_purple_preload_center = 51, y_purple_preload_center = -31.5, angle_purple_preload_center = 165;
-    public static double x_purple_preload_left = 51, y_purple_preload_left = -28, angle_purple_preload_left = 180;
+    public static double x_purple_preload_right = 51, y_purple_preload_right = -40.5, angle_purple_preload_right = 165;
+    public static double x_purple_preload_center = 51, y_purple_preload_center = -31.5, angle_purple_preload_center = 170;
+    public static double x_purple_preload_left = 51, y_purple_preload_left = -29.5, angle_purple_preload_left = 180;
 
-    public static double x_yellow_preload_right = 41, y_yellow_preload_right = -49, angle_yellow_preload_right = 182;
-    public static double x_yellow_preload_center = 41, y_yellow_preload_center = -29, angle_yellow_preload_center = 180;
-    public static double x_yellow_preload_left = 41, y_yellow_preload_left = -25, angle_yellow_preload_left = 180;
+//    public static double x_yellow_preload_right = 41, y_yellow_preload_right = -49, angle_yellow_preload_right = 182;
+//    public static double x_yellow_preload_center = 41, y_yellow_preload_center = -29, angle_yellow_preload_center = 180;
+//    public static double x_yellow_preload_left = 41, y_yellow_preload_left = -25, angle_yellow_preload_left = 180;
 
     public static double x_collect = -27, y_collect = -7.8, angle_collect = 180;
     public static double x_collect2 = -26.5, y_collect2 = -7.8, angle_collect2 = 180;
@@ -93,9 +94,9 @@ public class RedBackdrop extends LinearOpMode {
 
     public static double x_safe = 22, y_safe = -7.8, angle_safe = 181;
     public static double x_safe2 = 22, y_safe2 = -7.4, angle_safe2 = 180;
-    public static int poz_extendo_preloads_left = 1220;
+    public static int poz_extendo_preloads_left = 1250;
     public static int poz_extendo_preloads_center = 900;
-    public static int poz_extendo_preloads_right = 500;
+    public static int poz_extendo_preloads_right = 400;
 
     public static int poz_extendo_collect = 1340;
     public static int poz_extendo_reverse_intake = 1300;
@@ -129,6 +130,7 @@ public class RedBackdrop extends LinearOpMode {
         });
         FtcDashboard.getInstance().startCameraStream(camera, 0);
         location = redFarDetectionPipeline.getLocation();
+
         double voltage;
         VoltageSensor batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         voltage = batteryVoltageSensor.getVoltage();
@@ -186,7 +188,8 @@ public class RedBackdrop extends LinearOpMode {
             //DETECTION
             drive.lazyImu.get().resetYaw();
 
-            telemetry.addData("case", redFarDetectionPipeline.getLocation().toString());
+            location = redFarDetectionPipeline.getLocation();
+            telemetry.addData("case", location.toString());
             telemetry.update();
             sleep(50);
         }
@@ -202,14 +205,22 @@ public class RedBackdrop extends LinearOpMode {
                     case GOING_PRELOADS:
 
                         autoController.outtake.goToPreloads();
+                        autoController.lift.goToPoz(100);
+                        autoController.outtake.rotation.goRightVertical();
                         switch(location) {
                             case LEFT:
+                                telemetry.addData("LEFT", "STARTED");
+                                telemetry.update();
                                 Actions.runBlocking(goToPreloadsLeft);
                                 break;
                             case MIDDLE:
+                                telemetry.addData("MID", "STARTED");
+                                telemetry.update();
                                 Actions.runBlocking(goToPreloadsCenter);
                                 break;
                             case RIGHT:
+                                telemetry.addData("RIGHT", "STARTED");
+                                telemetry.update();
                                 Actions.runBlocking(goToPreloadsRight);
                                 break;
                         }
@@ -285,9 +296,13 @@ public class RedBackdrop extends LinearOpMode {
                                 Actions.runBlocking(drive.actionBuilder(safe).lineToX(collect.position.x)
                                         .build());
                                 autoController.extendo.goToPoz(poz_extendo_collect);
-                                autoController.intake.intake4Bar.goTo(Intake4Bar.POSE.pixel5);
-                                autoController.lastPixel = Intake4Bar.POSE.pixel5;
-                                autoController.intake.takePixelAuto(autoController.lastPixel);
+
+                                //autoController.lastPixel = Intake4Bar.POSE.pixel5;
+                                autoController.intake.takePixelAuto(Intake4Bar.POSE.pixel5);
+                                sleep(150);
+                                autoController.intake.takePixelAuto(Intake4Bar.POSE.pixel4);
+
+
                                 break;
                             case CYCLE_2:
                                 Actions.runBlocking(drive.actionBuilder(safe).lineToX(collect2.position.x)
@@ -394,7 +409,7 @@ public class RedBackdrop extends LinearOpMode {
                         autoController.outtake.goToIntake();
                         autoController.startTransfer();
                         CS = State.GOING_SCORE;
-                        sleep(1500);
+                        sleep(time_sleeping_safe);
                         break;
 
 //                    case SAFE_SCORE:

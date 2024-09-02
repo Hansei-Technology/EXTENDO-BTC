@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Utils.PIDController;
 
 @Config
 public class ExtendoControllerPID {
-    DcMotorEx left;
+    public DcMotorEx left;
     //double kp = 0.02, kd = 0.01, ki = 0.002;
     public static double kp = 0.03, kd = 0.04, ki = 0;
     public PIDController pidController = new PIDController(kp, kd, ki);

@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(group = "Teste")
 @Config
-@Disabled
+//@Disabled
 public class TestConfigServo1 extends LinearOpMode {
     Servo servo;
     public static double poz = 0;

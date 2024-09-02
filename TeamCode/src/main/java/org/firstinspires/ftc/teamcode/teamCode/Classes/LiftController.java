@@ -13,8 +13,8 @@ import org.firstinspires.ftc.teamcode.Utils.PIDController;
 
 @Config
 public class LiftController {
-    DcMotorEx left;
-    DcMotorEx right;
+    public DcMotorEx left;
+    public DcMotorEx right;
     //double kp = 0.02, kd = 0.01, ki = 0.002;
     public static double kp = 0.01, kd = 0, ki = 0;
     PIDController pidController = new PIDController(kp, kd, ki);
@@ -92,6 +92,8 @@ public class LiftController {
     }
 
     public void update() {
+        if(pidON)
+        {
 
         if (kp != pidController.p) pidController.p = kp;
         if (ki != pidController.p) pidController.i = ki;
@@ -120,8 +122,7 @@ public class LiftController {
                 break;
             }
         }
-        if(pidON)
-        {
+
             double powerExtendo = pidController.update(position);
             left.setPower(powerExtendo);
             right.setPower(powerExtendo);

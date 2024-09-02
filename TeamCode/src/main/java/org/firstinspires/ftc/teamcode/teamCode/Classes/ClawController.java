@@ -9,9 +9,9 @@ public class ClawController {
     Servo ClawLeft, ClawRight;
 
     public static double LeftOpen = 0.1;
-    public static double LeftClose = 0.65;
-    public static double RightOpen = 0.8;
-    public static double RightClose = 0.22;
+    public static double LeftClose = 0.67;
+    public static double RightOpen = 0.77;
+    public static double RightClose = 0.285;
     public static double LeftArrange= 0.65;
     public ClawController(HardwareMap map)
     {
