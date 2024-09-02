@@ -27,9 +27,9 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 
 import java.util.List;
-
+œ
 @Config
-@Autonomous
+@Autonomousœ
 
 public class RedBackdrop extends LinearOpMode {
     AutoController autoController;

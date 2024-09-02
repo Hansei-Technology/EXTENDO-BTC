@@ -118,7 +118,7 @@ public class ExtendoControllerPID {
         }
     }
 
-    int getPosition() {
+    public int getPosition() {
         return left.getCurrentPosition();
     }
 
